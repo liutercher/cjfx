@@ -1,0 +1,3185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2403班 成绩台账 · 九次考试</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231A211E'/%3E%3Cpath d='M7 10h18M7 16h18M7 22h11' stroke='%23FBFAF6' stroke-width='2'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#E7E9E2;
+  --sheet:#FAFBF7;
+  --sheet-2:#F2F4ED;
+  --ink:#1A211E;
+  --ink-2:#47524C;
+  --ink-3:#79837C;
+  --rule:#D3D7CC;
+  --rule-2:#E3E6DC;
+  --green:#20584A;
+  --green-2:#3C7A64;
+  --green-3:#DCE8E0;
+  --red:#A5382A;
+  --red-2:#F3E3DE;
+  --blue:#2B5B8A;
+  --amber:#8A6B22;
+  --serif:"Source Han Serif SC","Noto Serif SC","思源宋体","STSong","SimSun",serif;
+  --sans:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Noto Sans SC",system-ui,sans-serif;
+  --mono:"Cascadia Mono",Consolas,"SF Mono",monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.7;
+  font-feature-settings:"tnum" 1,"lnum" 1;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;color:inherit}
+input{font-family:inherit}
+h1,h2,h3{margin:0;font-weight:600;font-family:var(--serif);letter-spacing:.01em}
+p{margin:0}
+table{border-collapse:collapse}
+.page{max-width:1240px;margin:0 auto;padding:0 18px 64px}
+
+/* 报头 */
+.masthead{display:grid;gap:14px;padding:26px 0 16px;border-bottom:2px solid var(--ink)}
+.mast-kicker{font-size:12px;letter-spacing:.24em;color:var(--green);font-weight:600}
+.masthead h1{font-size:clamp(30px,7vw,46px);line-height:1.12;letter-spacing:-.01em}
+.mast-meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12.5px;color:var(--ink-2)}
+.mast-meta span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:5px;height:5px;background:var(--green);display:inline-block;border-radius:50%}
+
+/* 视图切换 */
+.tabs{display:flex;gap:0;margin-top:2px;border-bottom:1px solid var(--rule)}
+.tabs button{
+  appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+  padding:13px 2px 11px;margin-right:26px;cursor:pointer;
+  font-size:14.5px;font-weight:600;color:var(--ink-3);letter-spacing:.02em;
+  transition:color .15s,border-color .15s;
+}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--green)}
+.tabs .spacer{flex:1}
+.tabs .hint{align-self:center;font-size:12px;color:var(--ink-3);max-width:280px;text-align:right;padding-bottom:8px}
+
+/* 考试时间轴 */
+.tl-block{border-bottom:1px solid var(--rule);padding-bottom:2px}
+.tl-head{display:flex;align-items:baseline;justify-content:space-between;padding:14px 0 6px;gap:10px}
+.tl-head h2{font-size:13px;font-family:var(--sans);letter-spacing:.14em;color:var(--ink-2);font-weight:600}
+.tl-head .tl-note{font-size:12px;color:var(--ink-3)}
+.timeline{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));border-top:1px solid var(--rule-2)}
+.tl-node{
+  appearance:none;background:none;border:0;border-right:1px solid var(--rule-2);
+  border-bottom:2px solid transparent;padding:10px 8px 9px 10px;text-align:left;cursor:pointer;
+  display:grid;gap:2px;position:relative;transition:background .15s;min-width:0;
+}
+.tl-node:last-child{border-right:0}
+.tl-node:hover{background:var(--sheet-2)}
+.tl-node .idx{font-size:10.5px;letter-spacing:.12em;color:var(--ink-3);font-family:var(--mono)}
+.tl-node .lab{font-size:12.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-node .val{font-family:var(--serif);font-size:17px;line-height:1.3;color:var(--ink)}
+.tl-node .val small{font-size:10px;font-family:var(--sans);color:var(--ink-3);margin-left:2px}
+.tl-node[aria-selected="true"]{background:var(--ink);border-bottom-color:var(--green)}
+.tl-node[aria-selected="true"] .idx{color:#9DA8A1}
+.tl-node[aria-selected="true"] .lab{color:#C9D1CB}
+.tl-node[aria-selected="true"] .val{color:#FBFAF6}
+.tl-node[aria-selected="true"] .val small{color:#9DA8A1}
+
+/* 区块 */
+.section{margin-top:34px}
+.sec-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.sec-head h2{font-size:19px}
+.sec-head .no{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.1em}
+.sec-head .sub{font-size:12.5px;color:var(--ink-3);margin-left:auto;max-width:100%;white-space:normal}
+.sec-body{padding-top:16px}
+
+/* 划线 */
+.line-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 14px;background:var(--sheet);border:1px solid var(--rule)}
+.line-bar .lbl{font-size:13px;font-weight:600;letter-spacing:.04em}
+.line-bar .field{display:flex;align-items:center;gap:6px}
+.line-bar input[type="number"]{width:88px;padding:6px 8px;font-size:15px;border:1px solid var(--rule);background:#fff;color:var(--ink);text-align:right}
+.line-bar input[type="number"]:focus{outline:2px solid var(--green-3);border-color:var(--green)}
+.line-bar .unit{font-size:12.5px;color:var(--ink-3)}
+.line-bar .out{font-size:13px;color:var(--ink-2)}
+.line-bar .out b{font-family:var(--serif);font-size:18px;color:var(--green);padding:0 2px}
+.line-bar .out .none{color:var(--amber);font-weight:600}
+.line-bar .acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.mini-btn{appearance:none;border:1px solid var(--rule);background:#fff;color:var(--ink-2);font-size:12px;padding:5px 10px;cursor:pointer;letter-spacing:.02em;transition:border-color .15s,color .15s}
+.mini-btn:hover{border-color:var(--green);color:var(--green)}
+.mini-btn.on{background:var(--green);border-color:var(--green);color:#fff}
+.mini-btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* KPI */
+.kpi{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--rule);background:var(--sheet);margin-top:14px}
+.kpi-cell{padding:12px 14px 13px;border-bottom:1px solid var(--rule-2);border-right:1px solid var(--rule-2)}
+.kpi-cell .k{font-size:11.5px;color:var(--ink-3);letter-spacing:.06em}
+.kpi-cell .v{font-family:var(--serif);font-size:27px;line-height:1.25}
+.kpi-cell .v span{font-size:12px;font-family:var(--sans);color:var(--ink-3);margin-left:3px}
+.kpi-cell .d{font-size:11.5px;min-height:17px;color:var(--ink-3)}
+.up{color:var(--green)}
+.down{color:var(--red)}
+
+/* 图表 */
+.grid-2{display:grid;gap:18px;margin-top:18px}
+figure{margin:0;background:var(--sheet);border:1px solid var(--rule);display:flex;flex-direction:column;min-width:0}
+figcaption{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:11px 14px 9px;border-bottom:1px solid var(--rule-2);font-size:13px;font-weight:600;letter-spacing:.02em}
+figcaption .note{font-weight:400;font-size:11.5px;color:var(--ink-3);margin-left:auto;max-width:100%;white-space:normal}
+.chart{width:100%;height:290px;min-width:0}
+.chart.tall{height:330px}
+.chart-fallback{height:100%;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;font-size:13px;color:var(--amber);line-height:1.6}
+
+/* 名册 */
+.roster-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.roster-tools .sp{flex:1}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-3);align-items:center}
+.legend i{display:inline-block;width:9px;height:9px;margin-right:4px;vertical-align:-1px}
+.tblwrap{overflow-x:auto;border:1px solid var(--rule);background:var(--sheet)}
+table.roster{width:100%;table-layout:fixed;font-size:12.5px}
+table.roster thead th{font-weight:600;font-size:11.5px;color:var(--ink-2);letter-spacing:.04em;padding:8px 6px;border-bottom:1px solid var(--rule);background:var(--sheet-2);text-align:right;user-select:none;white-space:nowrap}
+table.roster thead th.l{text-align:left}
+table.roster thead th[data-key]{cursor:pointer}
+table.roster thead th:hover{color:var(--green)}
+table.roster tbody td{padding:6px;border-bottom:1px solid var(--rule-2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.roster tbody td.l{text-align:left}
+table.roster tbody tr:hover{background:#F7F9F2}
+table.roster tbody tr.pass td{background:rgba(165,56,42,.045)}
+name-cell,.name-cell{font-weight:600;font-family:var(--serif);font-size:13.5px}
+.stamp{display:inline-block;font-size:10px;line-height:1;letter-spacing:.16em;color:var(--red);border:1.5px solid var(--red);padding:3px 4px 2px;transform:rotate(-3deg);font-weight:600}
+.subj-hi{background:rgba(32,88,74,.08);font-weight:600}
+.subj-lo{background:rgba(165,56,42,.07)}
+
+/* 简报 */
+.brief{background:var(--sheet);border:1px solid var(--rule);padding:18px 18px 20px;margin-top:18px}
+.brief h3{font-size:15px;margin-bottom:4px}
+.bullets{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:9px}
+.bullets li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:13.5px;line-height:1.75;color:var(--ink-2)}
+.bullets li .mk{font-family:var(--mono);font-size:11px;color:var(--ink-3);padding-top:4px}
+.bullets li b{color:var(--ink);font-weight:600}
+
+/* 个人 */
+.stu-search{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.stu-search label{font-size:13px;font-weight:600;letter-spacing:.03em}
+.stu-search input{width:200px;padding:8px 10px;font-size:15px;border:1px solid var(--rule);background:#fff}
+.stu-search input:focus{outline:2px solid var(--green-3);border-color:var(--green)}
+.stu-search .chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{appearance:none;background:#fff;border:1px solid var(--rule);color:var(--ink-2);font-size:12px;padding:4px 9px;cursor:pointer}
+.chip:hover{border-color:var(--green);color:var(--green)}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.profile{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:4px}
+.idcard{background:var(--ink);color:#F2F4ED;padding:20px;display:grid;gap:14px;width:100%;box-sizing:border-box;min-width:0}
+.idcard .who{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.idcard h2{font-size:clamp(26px,6vw,36px);color:#FBFAF6;line-height:1.1}
+.idcard .cl{font-size:12px;color:#A9B3AC;padding-bottom:5px}
+.idcard .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 10px}
+.idcard .st{border-top:1px solid #39423D;padding-top:8px}
+.idcard .st .k{font-size:11px;color:#9DA8A1;letter-spacing:.08em}
+.idcard .st .v{font-family:var(--serif);font-size:22px;line-height:1.35;color:#FBFAF6}
+.idcard .st .v small{font-size:11.5px;font-family:var(--sans);color:#A9B3AC;margin-left:3px}
+.idcard .tags{display:flex;gap:7px;flex-wrap:wrap}
+.idcard .tag{font-size:11.5px;padding:3px 8px;border:1px solid #4A5550;color:#D6DCD7;letter-spacing:.03em}
+.idcard .tag.warn{border-color:#8D4A40;color:#E9BDB3}
+.idcard .tag.good{border-color:#3C7A64;color:#B9D8C8}
+
+.talk{background:var(--sheet);border:1px solid var(--rule);padding:18px}
+.talk h3{font-size:16px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.talk h3 .sub{font-size:11.5px;color:var(--ink-3);font-weight:400;letter-spacing:.04em}
+.talk .lead{font-size:14.5px;line-height:1.85;margin-top:10px;color:var(--ink)}
+.talk .lead b{color:var(--green);font-family:var(--serif);font-size:16px}
+.talk ul{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:11px}
+.talk li{display:grid;grid-template-columns:76px 1fr;gap:12px;font-size:13.5px;line-height:1.75}
+.talk li .tagm{font-size:11px;letter-spacing:.1em;color:var(--ink-3);border-left:2px solid var(--rule);padding-left:8px;align-self:start;padding-top:3px}
+.talk li .tx{color:var(--ink-2)}
+.talk li .tx b{color:var(--ink)}
+.talk .goal{margin-top:16px;padding-top:14px;border-top:1px dashed var(--rule);display:grid;gap:8px;font-size:13.5px}
+.talk .goal .g{display:flex;gap:10px;align-items:baseline}
+.talk .goal .g .gk{font-size:11.5px;color:var(--ink-3);min-width:64px}
+.talk .goal .g .gv{font-family:var(--serif);font-size:19px;color:var(--green)}
+.talk .goal .g .gv small{font-size:12px;font-family:var(--sans);color:var(--ink-3)}
+.talk-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+.stu-detail{border:1px solid var(--rule);background:var(--sheet);margin-top:18px;min-width:0;max-width:100%}
+.stu-detail .tblwrap{border:0;overflow-x:auto}
+table.detail{width:100%;table-layout:fixed;font-size:12.5px;min-width:720px}
+table.detail th{font-weight:600;font-size:11.5px;background:var(--sheet-2);padding:8px 6px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+table.detail th.l{text-align:left}
+table.detail td{padding:6px;border-bottom:1px solid var(--rule-2);text-align:right;white-space:nowrap}
+table.detail td.l{text-align:left}
+
+/* 维护 */
+.maint{margin-top:34px;border-top:2px solid var(--ink);padding-top:16px}
+.maint summary{cursor:pointer;font-size:14px;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px}
+.maint summary::-webkit-details-marker{display:none}
+.maint summary::before{content:"＋";font-family:var(--mono);color:var(--green);font-size:13px}
+.maint[open] summary::before{content:"－"}
+.maint-body{padding:16px 0 0;display:grid;gap:18px}
+.maint-grid{display:grid;gap:18px}
+.maint-card{border:1px solid var(--rule);background:var(--sheet);padding:16px}
+.maint-card h4{margin:0 0 8px;font-size:13.5px;letter-spacing:.04em}
+.maint-card p{font-size:12.5px;color:var(--ink-2);line-height:1.8}
+.maint-card code{font-family:var(--mono);font-size:11.5px;background:var(--sheet-2);padding:1px 4px}
+.drop{border:1px dashed var(--rule);padding:22px;text-align:center;font-size:13px;color:var(--ink-3);transition:border-color .15s,background .15s;cursor:pointer}
+.drop.hot{border-color:var(--green);background:var(--green-3);color:var(--green)}
+.maint-list{list-style:none;padding:0;margin:10px 0 0;font-size:12.5px;color:var(--ink-2);display:grid;gap:6px}
+
+.foot{margin-top:36px;padding-top:14px;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 20px;font-size:11.5px;color:var(--ink-3)}
+.foot .sp{flex:1}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);background:var(--ink);color:#FBFAF6;padding:10px 16px;font-size:13px;opacity:0;pointer-events:none;transition:.22s;z-index:99;max-width:88vw}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (min-width:720px){
+  .page{padding:0 30px 80px}
+  .kpi{grid-template-columns:repeat(4,1fr)}
+  .grid-2{grid-template-columns:1fr 1fr}
+  .profile{grid-template-columns:340px 1fr}
+  .idcard{align-self:start;position:sticky;top:16px}
+  .maint-grid{grid-template-columns:1fr 1fr}
+  .masthead{grid-template-columns:1fr auto;align-items:end}
+  .mast-meta{justify-content:flex-end}
+}
+@media (max-width:719px){
+  .timeline{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tl-node{border-right:1px solid var(--rule-2);border-bottom:1px solid var(--rule-2)}
+  .tl-note{display:none}
+  .tabs .hint{display:none}
+  .line-bar .acts{margin-left:0;width:100%}
+  .talk li{grid-template-columns:1fr;gap:4px}
+  .talk li .tagm{border-left:0;padding-left:0;letter-spacing:.14em;color:var(--green)}
+  .chart{height:250px}
+}
+@media print{
+  body{background:#fff}
+  .tabs,.line-bar .acts,.maint,.toast,.stu-search .chips{display:none}
+  .idcard{position:static}
+}
+</style>
+
+<style>
+.mini-grid{display:grid;grid-template-columns:minmax(0,1fr);border-top:1px solid var(--rule-2,#EDEFE6)}
+.mini{padding:8px 10px 2px;border-bottom:1px solid var(--rule-2,#EDEFE6);min-width:0}
+.mini:last-child{border-bottom:0}
+.mini-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-bottom:2px}
+.mini-h b{font-size:12.5px;font-weight:600;color:var(--ink,#1A211E)}
+.mini-h span{font-size:11px;color:var(--ink-3,#79837C);font-variant-numeric:tabular-nums}
+.mini-c{height:126px;width:100%}
+@media (max-width:719px){.mini-c{height:150px}}
+@media (min-width:760px){
+  .mini-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .mini:nth-child(odd){border-right:1px solid var(--rule-2,#EDEFE6)}
+  .mini:nth-last-child(2){border-bottom:0}
+}
+</style>
+<style>
+/* 单科特控线 + 达线标色 */
+:root{--miss:#2E7C4C}
+.line-bar{flex-direction:column;align-items:stretch;gap:10px}
+.line-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;min-width:0}
+.line-row.subj-line{border-top:1px dashed var(--rule-2,#E2E6DA);padding-top:10px}
+.subj-line .sl{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);letter-spacing:.02em}
+.subj-line input{width:58px;padding:4px 6px;font-size:13.5px;border:1px solid var(--rule);background:#fff;color:var(--ink);text-align:right}
+.subj-line input:focus{outline:2px solid var(--green-3,#CFE0D7);border-color:var(--green)}
+.subj-line .tip{font-size:11.5px;color:var(--ink-3)}
+.name-pass{color:var(--red)}
+table.roster td.miss{color:var(--miss);font-weight:600}
+.legend b{font-family:var(--serif);font-size:14px}
+.legend .lg-rd{color:var(--red)}
+.legend .lg-gr{color:var(--miss)}
+
+/* 个人档案：一轮复习建议 */
+.idcard .advice{border-top:1px solid #39423D;border-bottom:1px solid #39423D;padding:12px 0 13px;display:grid;gap:8px}
+.idcard .advice h4{font-size:11px;letter-spacing:.16em;color:#9DA8A1;font-weight:600}
+.idcard .advice p{font-size:12.5px;line-height:1.78;color:#D6DCD7;margin:0}
+.idcard .advice p b{color:#FBFAF6;font-weight:600}
+.idcard .advice p em{font-style:normal;font-family:var(--serif);font-size:12px;color:#9DA8A1;margin-right:7px;letter-spacing:.05em}
+.idcard .advice .rule{color:#A9B3AC;border-left:2px solid #4A5550;padding-left:9px}
+@media (max-width:759px){
+  .legend .lg-miss{display:none}
+}
+@media (max-width:719px){
+  .subj-line .sl{flex:1 1 30%}
+  .subj-line input{width:100%;max-width:80px}
+}
+
+/* 双人对比 */
+.cmp-bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:0 0 16px;padding:10px 12px;border:1px solid var(--rule);background:var(--sheet)}
+.cmp-bar label{font-size:13px;font-weight:600;letter-spacing:.03em}
+.cmp-bar input{width:180px;padding:7px 10px;font-size:15px;border:1px solid var(--rule);background:#fff;color:var(--ink)}
+.cmp-bar input:focus{outline:2px solid var(--green-3,#CFE0D7);border-color:var(--green)}
+.cmp-bar .cmp-hint{font-size:11.5px;color:var(--ink-3)}
+.cmp{display:grid;gap:18px;margin-top:18px}
+.cmp-title{display:flex;align-items:baseline;gap:10px 12px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:9px}
+.cmp-title h3{font-size:16px}
+.cmp-title .vs{font-family:var(--serif);font-size:12.5px;color:var(--ink-3);letter-spacing:.05em}
+.cmp-title .note{font-size:11.5px;color:var(--ink-3);margin-left:auto}
+.cmp .tblwrap{margin-top:0}
+table.cmp-table{width:100%;table-layout:fixed;font-size:13px}
+table.cmp-table thead th{font-size:11.5px;font-weight:600;color:var(--ink-2);padding:8px 10px;background:var(--sheet-2);border-bottom:1px solid var(--rule);text-align:right;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.cmp-table thead th.k{text-align:left}
+table.cmp-table tbody td{padding:7px 10px;border-bottom:1px solid var(--rule-2);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.cmp-table tbody td.k{text-align:left;color:var(--ink-3);font-size:12.5px;overflow:hidden;text-overflow:ellipsis}
+table.cmp-table tbody td b{font-family:var(--serif);font-size:15px;color:var(--ink);font-weight:400}
+table.cmp-table tbody td.lead b{color:var(--green)}
+table.cmp-table tbody td.d.good{color:var(--green)}
+table.cmp-table tbody td.d.bad{color:var(--red)}
+table.cmp-table tbody tr:nth-child(even){background:#FCFCF7}
+@media (max-width:519px){
+  table.cmp-table{font-size:12px}
+  table.cmp-table thead th,table.cmp-table tbody td{padding:7px 6px}
+  table.cmp-table tbody td b{font-size:13.5px}
+  .cmp-bar input{width:100%}
+}
+
+/* 临界生 */
+.h3-2{font-size:15px;margin:22px 0 4px;padding-top:16px;border-top:1px solid var(--rule-2);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.h3-2 .sub{font-size:11.5px;color:var(--ink-3);font-weight:400;letter-spacing:.04em}
+.edge-p{font-size:13.5px;line-height:1.8;color:var(--ink-2)}
+.edge-none{padding:18px;border:1px dashed var(--rule);font-size:13.5px;color:var(--ink-2);line-height:1.85;background:var(--sheet)}
+table.detail td.good{color:var(--green)}
+table.detail td.bad{color:var(--red)}
+.edge-bar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:14px;padding:10px 12px;border:1px solid var(--rule);background:var(--sheet)}
+.edge-bar label{font-size:13px;font-weight:600;letter-spacing:.03em}
+.edge-bar select{font-size:15px;padding:7px 10px;border:1px solid var(--rule);background:#fff;color:var(--ink);min-width:200px}
+.edge-bar select:focus{outline:2px solid var(--green-3,#CFE0D7);border-color:var(--green)}
+.edge-bar .edge-hint{font-size:11.5px;color:var(--ink-3)}
+.edge-list{display:grid;gap:12px;margin-top:16px}
+.edge-card{border:1px solid var(--rule);background:var(--sheet)}
+.edge-card .hd{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:11px 14px;border-bottom:1px solid var(--rule-2);background:var(--sheet-2)}
+.edge-card .hd b{font-family:var(--serif);font-size:16px;font-weight:600}
+.edge-card .hd .meta{font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.edge-card .hd .gap{font-family:var(--serif);font-size:14px}
+.edge-card .hd .gap.pos{color:var(--green)}
+.edge-card .hd .gap.neg{color:var(--red)}
+.edge-card .hd .mini-btn{margin-left:auto}
+.edge-card .rows{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:12px 14px 14px}
+.edge-card .blk .k{font-size:11px;letter-spacing:.12em;color:var(--ink-3)}
+.edge-card .blk ul{list-style:none;margin:7px 0 0;padding:0;display:grid;gap:6px;font-size:13px;line-height:1.75;color:var(--ink-2)}
+.edge-card .blk ul li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px}
+.edge-card .blk ul li .n{font-family:var(--mono);font-size:11px;color:var(--ink-3);padding-top:3px}
+.edge-card .blk ul li b{color:var(--ink)}
+@media (min-width:760px){ .edge-card .rows{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:26px} }
+@media (max-width:519px){
+  .edge-bar select{width:100%;min-width:0}
+  .edge-card .hd{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <div>
+      <div class="mast-kicker">荔浦中学 · 物化生组合</div>
+      <h1>2403班 成绩台账</h1>
+    </div>
+    <div class="mast-meta">
+      <span><i class="dot"></i>九次考试 · 2025.9 — 2026.11</span>
+      <span><i class="dot"></i>52 名在册学生</span>
+      <span><i class="dot"></i>口径：新高考赋分总分（750 分制）</span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-view="class" aria-selected="true">班级总览</button>
+    <button role="tab" data-view="student" aria-selected="false">个人档案</button>
+    <button role="tab" data-view="edge" aria-selected="false">临界生</button>
+    <div class="spacer"></div>
+    <div class="hint">点一次考试看全班，输一个名字看个人</div>
+  </nav>
+
+  <section class="tl-block">
+    <div class="tl-head">
+      <h2 id="tlTitle">考试序列</h2>
+      <div class="tl-note" id="tlNote"></div>
+    </div>
+    <div class="timeline" id="timeline" role="tablist" aria-label="选择考试"></div>
+  </section>
+
+  <main>
+    <!-- ===== 视图：班级总览 ===== -->
+    <section id="viewClass">
+      <div class="section" style="margin-top:22px">
+        <div class="line-bar">
+          <div class="line-row">
+            <span class="lbl">本次特控线</span>
+            <span class="field">
+              <input type="number" id="lineInput" step="0.5" inputmode="decimal" aria-label="本次特控线赋分总分" placeholder="录入">
+              <span class="unit">分（赋分总分）</span>
+            </span>
+            <span class="out" id="lineOut"></span>
+            <span class="acts">
+              <button class="mini-btn" id="btnAllLines">九次划线一览</button>
+            </span>
+          </div>
+          <div class="line-row subj-line" id="subjLineRow">
+            <span class="lbl">各科特控线</span>
+            <label class="sl"><span>语文</span><input type="number" step="0.5" inputmode="decimal" data-k="y" aria-label="语文特控线" placeholder="—"></label>
+            <label class="sl"><span>数学</span><input type="number" step="0.5" inputmode="decimal" data-k="m" aria-label="数学特控线" placeholder="—"></label>
+            <label class="sl"><span>英语</span><input type="number" step="0.5" inputmode="decimal" data-k="e" aria-label="英语特控线" placeholder="—"></label>
+            <label class="sl"><span>物理</span><input type="number" step="0.5" inputmode="decimal" data-k="p" aria-label="物理特控线" placeholder="—"></label>
+            <label class="sl"><span>化学赋分</span><input type="number" step="0.5" inputmode="decimal" data-k="c" aria-label="化学赋分特控线" placeholder="—"></label>
+            <label class="sl"><span>生物赋分</span><input type="number" step="0.5" inputmode="decimal" data-k="b" aria-label="生物赋分特控线" placeholder="—"></label>
+            <span class="tip" id="subjLineTip"></span>
+          </div>
+        </div>
+        <div id="allLines" hidden></div>
+        <div class="kpi" id="kpi"></div>
+      </div>
+
+      <div class="section">
+        <div class="sec-head">
+          <h2>分数结构与学科分布</h2>
+          <span class="sub" id="distSub"></span>
+        </div>
+        <div class="grid-2">
+          <figure>
+            <figcaption>赋分总分分段人数<span class="note" id="distNote"></span></figcaption>
+            <div class="chart" id="chartDist"></div>
+          </figure>
+          <figure>
+            <figcaption>六科均分与得分率<span class="note">柱＝班均得分率，细线＝班内最高—最低</span></figcaption>
+            <div class="chart" id="chartSubj"></div>
+          </figure>
+        </div>
+        <div class="grid-2">
+          <figure>
+            <figcaption>各科得分率离散度<span class="note">箱体＝中间50%，须＝最高—最低；语数英按得分率折算</span></figcaption>
+            <div class="chart" id="chartBox"></div>
+          </figure>
+          <figure>
+            <figcaption>与上次考试对比<span class="note" id="deltaNote">按赋分总分与各科均分</span></figcaption>
+            <div class="chart" id="chartDelta"></div>
+          </figure>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-head">
+          <h2>班级名册</h2>
+          <span class="no">ROSTER</span>
+          <span class="sub" id="rosterSub"></span>
+        </div>
+        <div class="sec-body">
+          <div class="roster-tools">
+            <button class="mini-btn on" id="btnSubj" aria-pressed="true">显示单科</button>
+            <div class="legend">
+              <span><b class="lg-rd">姓名</b> 达总分线</span>
+              <span class="lg-miss"><b class="lg-gr">分数</b> 未达单科线</span>
+              <span><i style="background:rgba(32,88,74,.18)"></i>高于班均</span>
+              <span><i style="background:rgba(165,56,42,.16)"></i>低于班均</span>
+              <span><span class="stamp">特控</span> 达线</span>
+            </div>
+          </div>
+          <div class="tblwrap" id="rosterWrap"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-head">
+          <h2>班级简报</h2>
+          <span class="no">BRIEF</span>
+        </div>
+        <div class="brief" id="classBrief"></div>
+      </div>
+    </section>
+
+    <!-- ===== 视图：个人档案 ===== -->
+    <section id="viewStudent" hidden>
+      <div class="section" style="margin-top:22px">
+        <div class="stu-search">
+          <label for="stuInput">学生姓名</label>
+          <input type="text" id="stuInput" list="stuList" placeholder="输入姓名，如：蒙思羽" autocomplete="off">
+          <datalist id="stuList"></datalist>
+          <div class="chips" id="stuChips"></div>
+        </div>
+          <div class="cmp-bar" id="cmpBar" hidden>
+            <label for="cmpInput">对比学生</label>
+            <input type="text" id="cmpInput" list="stuList" placeholder="输入姓名，与上面这位对比" autocomplete="off">
+            <button class="mini-btn" id="cmpClear" hidden>取消对比</button>
+            <span class="cmp-hint" id="cmpHint"></span>
+          </div>
+        <div id="stuEmpty" class="brief">
+          <h3>还没有选择学生</h3>
+          <p style="margin-top:6px;font-size:13.5px;color:var(--ink-2)">在上方输入或点选姓名，页面会列出他的九次成绩、校排名与班排名趋势、学科结构，并生成一份可直接用于谈话的班主任分析。</p>
+        </div>
+        <div class="profile" id="stuProfile" hidden>
+          <aside class="idcard" id="stuCard"></aside>
+          <div style="display:grid;gap:18px;min-width:0">
+            <figure>
+              <figcaption>赋分总分走势<span class="note" id="scoreNote"></span></figcaption>
+              <div class="chart tall" id="chartScore"></div>
+            </figure>
+            <figure>
+              <figcaption>名次走势<span class="note">纵轴已反转，越靠上名次越前</span></figcaption>
+              <div class="chart" id="chartSr"></div>
+              <div class="chart" id="chartCr"></div>
+            </figure>
+            <figure>
+              <figcaption>六科得分率走势<span class="note">实线＝本人，虚线＝当次班均</span></figcaption>
+              <div class="mini-grid" id="chartSubjTrend"></div>
+            </figure>
+            <figure>
+              <figcaption>学科结构诊断<span class="note" id="structNote"></span></figcaption>
+              <div class="chart tall" id="chartStruct"></div>
+            </figure>
+            <div class="talk" id="stuTalk"></div>
+            <div class="stu-detail">
+              <div class="tblwrap" id="stuDetail"></div>
+            </div>
+          </div>
+        </div>
+        <div class="cmp" id="stuCompare" hidden></div>
+      </div>
+    </section>
+
+    <!-- ===== 视图：临界生 ===== -->
+    <section id="viewEdge" hidden>
+      <div class="section" style="margin-top:22px">
+        <div class="sec-head">
+          <h2>临界生</h2>
+          <span class="no">NEAR LINE</span>
+          <span class="sub" id="edgeSub"></span>
+        </div>
+        <div class="sec-body">
+          <div class="edge-bar">
+            <label for="edgeExam">选择考试</label>
+            <select id="edgeExam"></select>
+            <span class="edge-hint" id="edgeHint">距线 ±10 分内即为临界生</span>
+          </div>
+          <figure id="edgeChartWrap" hidden>
+            <figcaption>临界生与全班的六科得分率<span class="note">琥珀＝临界生 · 灰＝全班班均（得分率，语数英按 150 分折算）</span></figcaption>
+            <div class="chart" id="edgeChart"></div>
+          </figure>
+          <div class="edge-list" id="edgeList"></div>
+          <p class="edge-p" style="margin-top:14px;font-size:12px;color:var(--ink-3)">临界生＝赋分总分落在当次特控线 ±10 分内的学生。线上的算“守线”，线下的算“冲刺”；名单随考试与划线自动更新，划线在「班级总览」页首按场录入。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <details class="maint" id="maint">
+    <summary>数据维护 · 后续考试怎么加进来</summary>
+    <div class="maint-body">
+      <div class="maint-grid">
+        <div class="maint-card">
+          <h4>方式一：直接拖入成绩单</h4>
+          <p>把学校发的 <code>.xlsx</code> 拖到下面的框里，页面会自动识别表头、按姓名并入，随后在时间轴末尾多出一次考试。数据存在本机浏览器里，换电脑或换浏览器需要重新导入。</p>
+          <div class="drop" id="dropZone">把 xlsx 文件拖到这里，或点击选择文件</div>
+          <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
+          <ul class="maint-list" id="importLog"></ul>
+        </div>
+        <div class="maint-card">
+          <h4>方式二：把文件发给助手</h4>
+          <p>把新成绩单发给我，我把它并入页面内置的数据区，重新生成一次 HTML。这种方式会把数据永久写进文件，换电脑也不会丢，适合学期末统一归档。</p>
+          <p style="margin-top:8px">内置数据在文件脚本区，用 <code>@data-start</code> 与 <code>@data-end</code> 两行注释围起来，后面紧跟 <code>const PACK</code>。整段由脚本生成，格式说明见文件末尾注释。</p>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="mini-btn" id="btnExport">导出当前全部数据（JSON）</button>
+            <button class="mini-btn" id="btnResetLocal" hidden>撤销本次导入</button>
+          </div>
+        </div>
+      </div>
+      <div class="maint-card">
+        <h4>口径说明</h4>
+        <p><b>赋分总分</b>：新高考 3+1+2 口径，语文、数学、英语各 150 分，物理 100 分按原始分计入，化学、生物按等级赋分后计入，合计 750 分。页面所有总分排序、分段、划线判断都以赋分总分为准，原始总分仅作参考。</p>
+        <p style="margin-top:6px"><b>特控线</b>：总分一条、单科六条，每场考试都要按当次划线分别录入。总分线决定达线人数与达线率；单科线用于名册标色——姓名标红＝总分达线，分数标绿＝该科未达线（化学、生物按赋分比对）。录入后随本机保存，下次打开仍在。</p>
+        <p style="margin-top:6px"><b>单科赋分</b>：九次成绩单均已给出化学、生物单科赋分，页面直接采用原始表数值。若某次成绩单缺这一列，程序会按官方赋分总分减去原始总分的增益，参照最近一次的分科增益结构分配，并在表中标注“推算值”。</p>
+      </div>
+    </div>
+  </details>
+
+  <footer class="foot">
+    <span>数据来源：9 份成绩单 xlsx，逐生逐科解析并核对</span>
+    <span class="sp"></span>
+    <span id="footStat"></span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+<script src="https://fastly.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+/* ============================================================
+   第一部分：数据层与算法
+   数据区由生成脚本写入，请勿手工改动；新增考试见页面底部「数据维护」
+   ============================================================ */
+/* @data-start */
+const PACK = String.raw`
+names:蒙思羽,韦京业,胡家豪,李奥,曾佳辉,李想,肖罗健,李思颖,邓丽珍,陈玄桓,覃业耀,何雯靖,陈凌曼,何柏运,罗意,潘艺慧,马小婷,李云彬,李羽萌,李彦兴,邓楷,莫冯羽,欧高敏,胡周林绎,莫甜甜,蒋丽婷,李家汉龙,陈俊宇,周盼盼,詹皇宇,陈铭阳,周煜栋,眭力文,王怡伶,莫鑫铭,谭誉腾,黄桢榕,陈江宇,韦金琳,莫佳宁,李米果,梁馨予,李瑞晶,玉巧缘,丘佳辰,曾慧妍,丘述丹,李春慧,陈首吉,丘子丹,刘奕翔,韦真姿
+exam:E1|2025年开学考|高二上·开学|2403班高二上学期开学考试成绩|
+exam:E2|2025年期中考试|高二上·期中|2403班高二上学期期中考试成绩|
+exam:E3|2025年12月考试|高二上·12月|2403班高二上学期12月考试成绩|
+exam:E4|2025年期末考试|高二上·期末|2403班高二上学期期末考试成绩|
+exam:E5|2026年开学考|高二下·开学|2403班高二下学期开学考试成绩|
+exam:E6|2026年期中考试|高二下·期中|2403班高二下学期期中考试成绩|
+exam:E7|2026年期末考试|高二下·期末|2403班高二下学期期末考试成绩分析|482
+exam:E8|2026年10月考试|高三·10月|2403班2026.10.12高三考试成绩分析|
+exam:E9|2026年11月考试|高三·11月|2403班2026.12.2高三考试成绩|
+rows:
+0|0|1|523.5|470.5|56|108|89|107.5|42|70|54|89|88|0
+0|1|2|513|461|69|110|98|99|28|73|53|90|88|0
+0|2|3|512.5|456.5|70|114.5|106|98|24|71|43|89|81|0
+0|3|4|507.5|455.5|79|105|86|128.5|11|78|47|92|85|0
+0|4|5|498.5|439.5|100|93.5|107|84|41|63|51|86|87|0
+0|5|6|498.5|439.5|100|101.5|74|117|37|54|56|80|89|0
+0|6|7|495|440|109|99|81|91|49|64|56|86|89|0
+0|7|8|494|433|111|105|86|103|38|61|40|84|78|0
+0|8|9|491.5|437.5|117|108|82|97.5|28|73|49|90|86|0
+0|9|10|484.5|420.5|134|109.5|79|112|24|54|42|80|80|0
+0|10|11|483|424|139|96.5|92|81.5|48|66|40|87|78|0
+0|11|12|476.5|412.5|154|96.5|107|85|25|55|44|81|82|0
+0|12|13|473|408|160|105|83|99|23|52|46|79|84|0
+0|13|14|471.5|412.5|164|102.5|94|79|25|67|45|88|83|0
+0|14|15|469.5|407.5|170|106|86|80.5|30|60|45|84|83|0
+0|15|16|469.5|402.5|170|119|71|96.5|28|45|43|74|81|0
+0|16|17|465.5|410.5|187|101|78|94.5|27|73|37|90|75|0
+0|17|18|464|401|193|110|86|94|29|53|29|79|66|0
+0|18|19|462.5|401.5|197|108.5|54|104|36|61|38|84|76|0
+0|19|20|454|389|212|99|95|62|43|51|39|78|77|0
+0|20|21|453|390|215|104|73|77|45|56|35|81|73|0
+0|21|22|453|390|215|98|82|91|24|57|38|82|76|0
+0|22|23|448|385|231|111|82|85|27|53|27|79|64|0
+0|23|24|445.5|381.5|240|99.5|77|80|25|51|49|78|86|0
+0|24|25|445|381|244|106.5|65|84.5|26|53|46|79|84|0
+0|25|26|444|377|250|100|78|87|20|43|49|73|86|0
+0|26|27|443.5|379.5|255|97.5|77|74|29|54|48|80|86|0
+0|27|28|443.5|385.5|255|105.5|84|70|30|67|29|88|66|0
+0|28|29|438.5|369.5|274|113.5|78|83|12|41|42|72|80|0
+0|29|30|433.5|366.5|283|106.5|43|104|24|46|43|75|81|0
+0|30|31|432.5|363.5|288|103.5|61|99|28|41|31|72|69|0
+0|31|32|432|371|290|98|67|65|35|61|45|84|83|0
+0|32|33|425.5|358.5|320|97|72|97.5|20|42|30|72|67|0
+0|33|34|425.5|355.5|320|111.5|48|107|26|27|36|59|74|0
+0|34|35|425|361|323|103|73|86|4|54|41|80|79|0
+0|35|36|423|355|332|102|86|59|27|42|39|72|77|0
+0|36|37|422.5|367.5|335|105|72|62.5|16|72|40|89|78|0
+0|37|38|422|356|337|98|88|44|36|47|43|75|81|0
+0|38|39|410.5|353.5|386|90.5|69|64|20|48|62|76|91|0
+0|39|40|410|342|388|104|54|87|14|44|39|74|77|0
+0|40|41|406.5|338.5|405|100|78|69.5|22|39|30|70|67|0
+0|41|42|403.5|337.5|414|77|66|68.5|42|48|36|76|74|0
+0|42|43|403|333|415|121|53|70|20|30|39|62|77|0
+0|43|44|401.5|332.5|422|96|51|87.5|27|35|36|66|74|0
+0|44|45|398.5|334.5|436|85.5|81|47|39|52|30|79|67|0
+0|45|46|398|331|437|107.5|49|77.5|11|35|51|66|87|0
+0|46|47|387|323|468|98.5|52|57.5|16|48|51|76|87|0
+0|47|48|380.5|311.5|489|78|75|60.5|21|40|37|71|75|0
+0|48|49|373|309|513|103.5|26|85.5|20|49|25|77|61|0
+0|49|50|369.5|301.5|525|99.5|52|66|19|37|28|68|65|0
+0|50|51|360|292|559|82|70|51|13|42|34|72|72|0
+0|51|52|347|278|600|94|51|59|9|34|31|65|69|0
+1|5|1|569|556|37|95|104|110|74|85|88|93|93|0
+1|2|2|562.5|541.5|46|98.5|89|112|88|75|79|88|87|0
+1|3|3|553|536|59|87.5|88|123.5|74|81|82|91|89|0
+1|1|4|547|529|67|93.5|98|115.5|67|81|74|91|82|0
+1|0|5|545|528|70|98|94|121|53|81|81|91|88|0
+1|7|6|533|508|84|99.5|84|114.5|70|60|80|78|87|0
+1|11|7|529.5|507.5|88|94.5|126|88|54|76|69|89|78|0
+1|16|8|529|509|89|89.5|86|107.5|69|75|82|88|89|0
+1|8|9|525|503|94|102.5|78|95.5|74|74|79|88|87|0
+1|19|10|512.5|489.5|113|94|93|92.5|61|71|78|86|86|0
+1|17|11|506|483|130|93|67|110|66|71|76|86|84|0
+1|6|12|505.5|482.5|133|93.5|74|100|64|69|82|85|89|0
+1|4|13|505|482|135|103|68|93|66|67|85|84|91|0
+1|10|14|501.5|477.5|145|84.5|62|100|82|67|82|84|89|0
+1|9|15|493.5|467.5|172|86|69|123.5|54|64|71|81|80|0
+1|24|16|492.5|467.5|175|100.5|85|94|46|61|81|79|88|0
+1|12|17|488.5|463.5|190|100.5|78|100|45|65|75|82|83|0
+1|13|18|486|466|202|105|63|89|59|79|71|90|80|0
+1|35|19|485|460|205|95.5|81|72.5|65|67|79|84|87|0
+1|20|20|483.5|457.5|208|90|80|84.5|66|60|77|78|85|0
+1|25|21|483.5|456.5|208|100|66|100.5|58|57|75|76|83|0
+1|39|22|482|454|213|94|63|103|65|57|72|76|81|0
+1|34|23|473|448|241|84|69|102|49|55|89|75|94|0
+1|22|24|472.5|444.5|242|111|73|87.5|44|59|70|78|79|0
+1|36|25|470|446|251|99.5|66|87.5|44|70|79|86|87|0
+1|37|26|470|441|251|86|89|83|54|51|78|72|86|0
+1|38|27|469|445|257|74|86|87|52|60|86|78|92|0
+1|27|28|468.5|442.5|258|88.5|75|73|71|64|71|81|80|0
+1|23|29|468.5|436.5|258|88.5|81|103|54|55|55|75|67|0
+1|29|30|467.5|442.5|263|87.5|40|108|66|68|73|84|82|0
+1|31|31|466.5|442.5|271|79.5|64|88|65|66|80|83|87|0
+1|44|32|466.5|440.5|271|87.5|64|73|75|62|79|80|87|0
+1|26|33|462.5|436.5|283|105|70|82.5|41|60|78|78|86|0
+1|14|34|459.5|432.5|298|99.5|81|84|38|60|70|78|79|0
+1|18|35|458.5|432.5|305|94.5|52|104|41|58|83|77|90|0
+1|21|36|456|424|313|88|82|91|56|49|58|70|69|0
+1|30|37|455.5|431.5|316|94|39|95.5|57|69|77|85|85|0
+1|15|38|449.5|420.5|334|93.5|50|103|50|50|74|71|82|0
+1|42|39|447|415|346|107.5|66|74.5|57|38|72|61|81|0
+1|28|40|445|417|358|99|60|98|33|52|75|72|83|0
+1|46|41|435|407|397|89|65|87|42|56|68|75|77|0
+1|45|42|432|403|409|89|56|89|50|53|66|73|75|0
+1|32|43|425.5|396.5|427|89.5|49|100|36|52|70|72|79|0
+1|51|44|419.5|390.5|450|93.5|48|84|40|53|72|73|81|0
+1|48|45|419.5|388.5|450|88.5|54|99|35|51|61|72|71|0
+1|40|46|419|385|452|91.5|57|91.5|43|50|52|71|65|0
+1|47|47|416.5|386.5|462|85.5|62|81|39|63|56|81|68|0
+1|33|48|415.5|379.5|464|91|52|109.5|33|43|51|65|65|0
+1|43|49|404.5|369.5|505|89.5|57|87|39|45|52|67|65|0
+1|50|50|391|359|561|89.5|46|66.5|48|44|65|66|75|0
+1|49|51|387|353|577|86.5|49|92.5|25|42|58|65|69|0
+2|3|1|552.5|515.5|31|113.5|70|125|67|62|78|87|90|0
+2|0|2|531|497|56|105.5|77|115.5|55|65|79|88|90|0
+2|11|3|531|491|56|106.5|97|109.5|48|53|77|81|89|0
+2|4|4|519|480|66|96.5|79|103.5|69|56|76|83|88|0
+2|2|5|516|484|71|104|83|88|62|68|79|89|90|0
+2|1|6|514|479|72|104.5|83|105.5|43|60|83|86|92|0
+2|5|7|511.5|475.5|75|89|64|104.5|77|66|75|89|88|0
+2|16|8|505.5|464.5|87|104.5|78|99|54|59|70|86|84|0
+2|10|9|500.5|459.5|90|104|79|88.5|63|46|79|76|90|0
+2|9|10|487.5|444.5|113|107|68|116.5|35|44|74|74|87|0
+2|37|11|482.5|441.5|126|103.5|90|72|49|58|69|85|83|0
+2|17|12|474.5|431.5|152|103.5|63|105|59|47|54|76|68|0
+2|25|13|473.5|428.5|154|117|55|101.5|44|42|69|73|83|0
+2|26|14|473|432|157|100|69|98|41|48|76|77|88|0
+2|19|15|472|431|161|106.5|57|87.5|55|46|79|76|90|0
+2|24|16|463|422|182|108|68|88|31|52|75|80|88|0
+2|29|17|461.5|419.5|186|104.5|53|98|44|52|68|80|82|0
+2|8|18|461|421|188|104|50|101|34|55|77|83|89|0
+2|13|19|458.5|416.5|195|101.5|59|82|56|55|63|83|77|0
+2|20|20|454|411|208|97.5|66|85.5|53|48|61|77|75|0
+2|18|21|451|409|218|104.5|41|110.5|29|54|70|82|84|0
+2|7|22|451|411|218|103|59|84|34|57|74|84|87|0
+2|15|23|450|407|225|106.5|53|101.5|35|47|64|76|78|0
+2|12|24|448.5|403.5|228|101|58|104.5|40|34|66|65|80|0
+2|35|25|448.5|409.5|228|97.5|62|72|56|62|60|87|74|0
+2|45|26|448.5|403.5|228|110|53|93.5|39|42|66|73|80|0
+2|6|27|445|402|242|92.5|53|92.5|45|49|70|78|84|0
+2|34|28|445|404|242|99.5|63|83.5|33|57|68|84|82|0
+2|39|29|440|399|261|99|53|96|28|56|67|83|81|0
+2|27|30|438|397|266|90|60|71|58|56|62|83|76|0
+2|22|31|432.5|392.5|280|102|60|68.5|32|51|79|80|90|0
+2|30|32|427.5|384.5|302|107|29|103.5|32|51|62|80|76|0
+2|44|33|426.5|381.5|308|85|71|67.5|54|42|62|73|76|0
+2|23|34|425.5|379.5|314|97|64|91.5|38|36|53|67|68|0
+2|36|35|425|382|315|100|61|65|33|50|73|79|87|0
+2|21|36|418.5|373.5|340|100|56|76.5|42|33|66|64|80|0
+2|31|37|417|375|348|92.5|41|63.5|52|55|71|83|85|0
+2|33|38|413|368|362|104.5|33|106.5|24|33|67|64|81|0
+2|38|39|405|361|388|98.5|44|74.5|38|44|62|74|76|0
+2|43|40|399|355|408|88|43|97|25|45|57|75|71|0
+2|28|41|387.5|346.5|457|105.5|26|72|18|48|77|77|89|0
+2|32|42|382.5|337.5|472|99.5|36|89|20|38|55|69|69|0
+2|42|43|380|335|484|107|32|65|26|34|71|65|85|0
+2|40|44|379.5|330.5|489|104.5|32|83|34|40|37|71|55|0
+2|49|45|378.5|333.5|493|94.5|32|79|21|41|66|72|80|0
+2|46|46|377|332|500|107|40|63|17|42|63|73|77|0
+2|51|47|376|330|503|96.5|44|76.5|23|38|52|69|67|0
+2|50|48|370.5|325.5|523|81.5|52|63|30|41|58|72|72|0
+2|48|49|360|315|560|89|19|99|10|34|64|65|78|0
+2|47|50|343|294|611|84.5|49|67.5|23|31|39|62|57|0
+3|0|1|615|580|16|122|118|131|67|64|78|85|92|0
+3|3|2|605|565|31|110|125|124|74|56|76|81|91|0
+3|1|3|583|548|54|105|118|114|71|73|67|89|86|0
+3|5|4|580|548|60|109|112|112|72|78|65|90|85|0
+3|2|5|578|544|66|103|119|103|78|75|66|89|86|0
+3|8|6|574|537|78|110|119|109|65|71|63|88|83|0
+3|10|7|572|534|84|104|112|106|79|71|62|88|83|0
+3|6|8|565|527|99|113|108|109|63|63|71|84|88|0
+3|17|9|564|523|101|108|113|112|64|63|63|84|83|0
+3|4|10|563|520|106|92|125|105|76|61|61|83|82|0
+3|16|11|554|517|123|98|114|115|52|67|71|87|88|0
+3|11|12|548|504|148|108|120|92|62|60|62|83|83|0
+3|9|12|548|497|148|99|105|125|62|44|62|74|83|0
+3|15|14|543|495|166|98|92|124|68|48|65|76|85|0
+3|29|15|536|492|194|96|94|111|67|58|66|82|86|0
+3|7|16|534|490|199|101|114|95|56|56|68|81|87|0
+3|22|17|533|488|205|105|119|95|49|54|66|79|86|0
+3|27|18|532|494|210|105|116|64|75|70|64|88|84|0
+3|18|19|527|482|223|94|87|129|54|45|73|74|89|0
+3|20|20|525|479|234|92|124|90|60|57|56|81|78|0
+3|19|21|524|482|238|98|110|88|63|63|60|84|81|0
+3|25|22|523|473|243|99|115|112|44|50|53|77|76|0
+3|31|22|523|481|243|101|105|81|66|58|70|82|88|0
+3|23|24|522|473|251|106|107|110|46|53|51|79|74|0
+3|37|25|515|469|280|104|125|60|65|56|59|81|80|0
+3|35|26|514|469|286|92|122|71|66|60|58|83|80|0
+3|13|27|513|468|288|100|102|85|66|59|56|82|78|0
+3|33|27|513|460|288|111|92|112|47|36|62|68|83|0
+3|21|29|512|467|294|95|114|89|58|61|50|83|73|0
+3|24|30|510|462|299|100|104|100|46|48|64|76|84|0
+3|39|30|510|469|299|105|86|103|46|65|64|86|84|0
+3|34|32|509|462|306|98|103|89|57|53|62|79|83|0
+3|12|33|506|458|321|94|110|99|44|48|63|76|83|0
+3|30|34|505|457|326|105|84|102|59|52|55|78|77|0
+3|36|35|498|456|354|95|91|87|65|69|49|87|73|0
+3|26|36|497|449|359|107|103|79|46|49|65|77|85|0
+3|32|37|496|442|365|94|107|101|45|39|56|71|78|0
+3|43|38|491|439|384|105|103|96|37|45|53|74|76|0
+3|38|39|489|441|393|102|113|73|43|53|57|79|79|0
+3|45|39|489|443|393|98|85|99|47|55|59|80|80|0
+3|28|41|487|438|399|106|98|95|30|45|64|74|84|0
+3|49|42|481|429|415|88|104|92|43|41|61|72|82|0
+3|48|43|477|423|428|95|87|98|54|29|60|62|81|0
+3|40|44|474|417|437|96|84|100|57|31|49|64|73|0
+3|51|45|463|408|473|98|77|91|57|35|50|67|73|0
+3|44|45|463|415|473|106|81|59|62|55|52|80|75|0
+3|42|47|456|400|496|99|100|70|50|36|45|68|69|0
+3|47|48|455|404|500|97|95|74|39|47|52|75|75|0
+3|50|49|416|359|608|89|98|53|37|34|48|67|72|0
+3|46|50|412|362|622|93|75|51|39|47|57|75|79|0
+4|0|1|534.5|488.5|55|103|93|102.5|60|69|61|91|85|0
+4|3|2|531|479|60|102|88|114|66|50|59|78|83|0
+4|8|3|517.5|467.5|73|100|83|92.5|71|61|60|87|84|0
+4|10|4|517|467|74|93|95|88|73|60|58|87|81|0
+4|9|5|509.5|459.5|81|104|73|114.5|59|53|56|81|78|0
+4|1|6|508.5|465.5|83|91|64|92.5|76|76|66|95|90|0
+4|2|7|503.5|456.5|95|101|89|84.5|73|58|51|85|71|0
+4|5|8|502|451|99|101|74|87|66|60|63|87|87|0
+4|4|9|491.5|443.5|113|92|87|68.5|66|66|64|90|88|0
+4|11|10|483|433|128|98|79|85|69|49|53|78|74|0
+4|16|11|480|428|130|104|70|86|45|57|66|85|90|0
+4|17|12|476|428|143|104|76|81|62|54|51|82|71|0
+4|6|13|475|432|146|97|77|78|67|65|48|89|67|0
+4|24|14|468|417|160|106|59|87|43|59|63|86|87|0
+4|13|15|463.5|415.5|175|88|66|90.5|77|47|47|76|66|0
+4|20|16|462.5|420.5|179|94|76|74.5|78|59|39|86|54|0
+4|12|17|457|416|193|93|84|88|65|50|36|78|49|0
+4|35|18|456.5|409.5|194|99|86|58.5|64|54|48|82|67|0
+4|15|19|453|401|208|103|58|85|52|46|57|75|80|0
+4|19|20|451.5|402.5|214|92|65|84.5|52|57|52|85|73|0
+4|37|21|451|398|215|99|81|55|56|43|64|72|88|0
+4|7|22|445|397|236|98|53|81|55|58|52|85|73|0
+4|38|23|443.5|391.5|239|95|65|74.5|45|52|60|80|84|0
+4|22|24|443|392|242|114|68|66|49|40|55|69|77|0
+4|36|25|437.5|390.5|265|91|66|65.5|59|60|49|87|69|0
+4|18|26|434|385|275|92|54|93|47|49|50|78|70|0
+4|34|27|431|380|287|109|60|62|55|40|54|69|76|0
+4|42|28|428|378|292|106|74|51|59|35|53|64|74|0
+4|26|29|426|375|300|100|64|65|48|43|55|72|77|0
+4|39|30|424|374|309|97|54|76|48|46|53|75|74|0
+4|27|31|422.5|372.5|310|93|71|46.5|65|44|53|73|74|0
+4|29|32|418.5|365.5|324|86|36|75.5|59|47|62|76|86|0
+4|32|33|415|368|338|94|59|87|41|42|45|71|63|0
+4|43|34|412.5|366.5|350|96|66|85.5|48|27|44|56|61|0
+4|21|35|411|365|357|93|62|77|44|45|44|74|61|0
+4|44|36|402.5|354.5|376|94|46|56.5|69|42|47|71|66|0
+4|30|37|399.5|355.5|389|101|50|88.5|36|40|40|69|55|0
+4|48|38|396|345|399|97|24|85|53|30|56|59|78|0
+4|28|39|391|338|421|95|47|79|34|24|59|53|83|0
+4|45|40|390|341|425|106|34|73|41|37|50|66|70|0
+4|25|41|387.5|339.5|432|98|41|69.5|45|38|48|67|67|0
+4|46|42|385.5|338.5|439|92|44|69.5|44|43|46|72|64|0
+4|23|43|384|342|446|87|83|72|39|21|40|48|55|0
+4|33|44|383|335|447|97|31|88|38|33|48|62|67|0
+4|31|45|375.5|332.5|469|84|39|53.5|58|57|41|85|56|0
+4|40|46|373.5|326.5|476|85|48|70.5|45|32|46|61|64|0
+4|47|47|371.5|330.5|481|90|63|65.5|33|46|33|75|45|0
+4|50|48|368.5|320.5|491|75|69|55.5|43|30|48|59|67|0
+4|49|49|358|312|524|87|50|64|36|31|44|60|61|0
+4|51|50|333.5|292.5|588|96|36|53.5|37|36|34|65|46|0
+5|0|1|545|508|55|99|95|123|53|62|76|88|87|0
+5|1|2|539|499|64|101.5|93|101.5|68|56|79|86|89|0
+5|5|3|538|496|65|106|86|108|68|56|72|86|84|0
+5|4|4|530.5|488.5|71|100|109|84.5|65|56|74|86|86|0
+5|3|5|525.5|481.5|81|102.5|89|127|60|45|58|77|70|0
+5|6|6|509|464|107|110.5|85|103.5|58|40|67|73|79|0
+5|2|7|502.5|461.5|119|91.5|97|91|56|58|68|87|80|0
+5|7|8|496.5|452.5|127|104.5|100|100|43|46|59|78|71|0
+5|18|9|493.5|453.5|137|95.5|76|111|51|59|61|87|73|0
+5|9|10|488|441|145|98|102|118|36|32|55|66|68|0
+5|8|11|485.5|443.5|149|100.5|72|93|57|54|67|84|79|0
+5|16|11|485.5|444.5|149|93.5|68|101|52|57|73|86|85|0
+5|20|13|484|439|154|91.5|97|98.5|41|41|70|74|82|0
+5|10|14|483.5|439.5|155|73.5|88|95|81|50|52|81|65|0
+5|13|15|480.5|435.5|169|96|97|95.5|49|42|56|75|68|0
+5|15|16|472.5|427.5|183|90.5|87|100|36|41|73|74|85|0
+5|12|17|459.5|413.5|215|94|92|78.5|54|39|56|73|68|0
+5|11|18|459|413|221|87|113|74|45|33|61|67|73|0
+5|29|19|453.5|407.5|237|92.5|60|101|50|35|69|69|81|0
+5|17|20|453|405|240|113.5|63|101.5|48|31|48|65|62|0
+5|22|21|452.5|406.5|242|101.5|66|94|35|36|74|70|86|0
+5|23|22|452|411|243|92|84|88|31|58|58|87|70|0
+5|36|23|451.5|415.5|245|96|85|73.5|37|65|59|89|71|0
+5|35|24|449.5|403.5|249|90.5|92|82|50|29|60|63|72|0
+5|34|25|446.5|400.5|254|97|74|91.5|42|37|59|71|71|0
+5|24|26|440.5|396.5|274|96.5|63|81|52|45|59|77|71|0
+5|39|27|438.5|393.5|277|94|63|89.5|37|40|70|73|82|0
+5|32|28|436.5|390.5|285|93.5|74|85|41|31|66|65|78|0
+5|25|29|429.5|382.5|313|95.5|60|100|40|28|59|63|71|0
+5|45|30|422.5|376.5|343|105|42|96.5|44|30|59|64|71|0
+5|40|31|421.5|375.5|345|97|70|79.5|39|33|57|67|69|0
+5|26|32|421|375|347|104|63|72|34|36|66|70|78|0
+5|37|33|416|372|365|88|69|69|37|47|62|79|74|0
+5|38|33|416|370|365|97|54|81|30|37|71|71|83|0
+5|31|35|411.5|368.5|377|78|55|74.5|55|53|53|83|66|0
+5|19|35|411.5|365.5|377|88|59|88.5|40|40|50|73|63|0
+5|27|37|408|360|389|89|77|67|43|35|49|69|63|0
+5|42|38|406|360|396|108|70|54|30|32|66|66|78|0
+5|30|39|403|356|407|96.5|35|95.5|43|35|51|69|64|0
+5|28|40|395|348|435|102|54|87|23|21|61|56|73|0
+5|33|41|394.5|347.5|437|92.5|37|108|26|29|55|63|68|0
+5|47|42|393.5|347.5|442|77.5|76|67|32|47|48|79|62|0
+5|48|43|385|338|478|90|28|110|27|25|58|60|70|0
+5|43|44|377.5|329.5|506|96.5|54|94|28|15|42|48|57|0
+5|21|45|374.5|326.5|518|87|50|76.5|30|38|45|72|59|0
+5|44|46|373|326|523|82.5|60|51.5|46|35|51|69|64|0
+5|49|47|372.5|326.5|529|88.5|34|98|20|29|57|63|69|0
+5|46|48|347.5|300.5|593|91|38|72.5|18|21|60|56|72|0
+5|50|48|347.5|299.5|593|85|54|59.5|15|38|48|72|62|0
+5|51|50|342.5|295.5|612|87.5|47|75|22|15|49|48|63|0
+6|3|1|598|566|28|123|102|129|66|71|75|90|88|0
+6|5|2|583|554|47|103|118|120|61|73|79|91|90|0
+6|0|3|574|540|62|117|99|123|58|66|77|88|89|0
+6|4|4|565|524|78|117|115|104|61|59|68|84|84|0
+6|2|5|560|530|83|110|98|100|76|79|67|93|83|0
+6|1|6|558|524|87|102|107|109|65|73|68|91|84|0
+6|8|7|555|520|92|107|94|111|67|69|72|89|87|0
+6|6|8|553|516|94|104|105|99|70|60|78|85|90|0
+6|16|9|538|505|145|108|97|95|60|68|77|89|89|0
+6|9|10|535|486|152|108|95|121|53|40|69|73|85|0
+6|29|11|531|489|169|101|93|106|66|61|62|86|79|0
+6|12|12|529|483|176|103|102|107|57|47|67|77|83|0
+6|11|13|528|489|179|107|107|84|68|67|56|88|74|0
+6|15|14|527|487|185|117|67|115|57|57|74|83|88|0
+6|10|15|524|479|194|92|97|106|69|56|59|83|77|0
+6|25|16|523|476|199|108|81|122|58|46|61|76|78|0
+6|22|17|520|474|217|109|97|94|60|51|63|80|80|0
+6|19|18|516|469|229|98|113|95|54|51|58|80|76|0
+6|18|19|512|466|244|107|80|113|51|49|66|78|83|0
+6|36|20|512|475|244|110|96|78|55|67|69|88|85|0
+6|34|21|510|466|256|104|93|94|54|53|68|81|84|0
+6|39|22|508|467|265|117|79|98|45|60|68|85|84|0
+6|17|23|507|463|270|104|85|110|49|58|57|84|75|0
+6|37|24|500|455|301|108|86|81|62|52|66|80|83|0
+6|20|25|499|453|308|100|95|88|64|54|52|81|71|0
+6|23|26|498|452|315|107|95|103|36|52|59|80|77|0
+6|27|27|496|447|322|105|100|76|65|48|53|78|72|0
+6|7|28|496|450|322|108|84|96|48|47|67|77|83|0
+6|33|29|492|441|338|99|89|119|37|34|63|68|80|0
+6|13|30|486|436|365|107|91|83|58|34|53|75|72|0
+6|35|31|482|438|383|100|90|68|60|53|67|81|83|0
+6|24|32|481|433|393|108|76|96|47|47|59|77|77|0
+6|30|33|480|431|400|115|67|98|50|45|56|76|74|0
+6|43|34|478|426|412|103|77|105|47|34|60|68|78|0
+6|21|35|475|424|423|107|91|94|39|47|46|77|67|0
+6|40|36|468|419|452|102|84|93|41|50|49|79|69|0
+6|51|37|467|415|456|103|89|75|55|34|59|68|77|0
+6|45|38|465|414|468|102|61|109|43|36|63|70|80|0
+6|44|39|461|416|486|103|77|61|67|57|51|83|70|0
+6|26|40|460|409|491|106|76|89|41|43|54|75|73|0
+6|31|41|460|414|491|92|78|74|59|52|59|80|77|0
+6|47|42|459|409|495|96|82|73|54|40|64|73|81|0
+6|38|43|458|411|499|91|79|85|46|51|59|80|77|0
+6|48|44|450|399|526|93|62|95|53|34|62|68|79|0
+6|50|45|444|394|547|93|90|63|46|42|60|74|78|0
+6|28|46|437|385|577|108|49|87|46|36|59|70|77|0
+6|42|47|435|382|586|113|79|62|46|27|55|62|73|0
+6|32|48|435|383|586|92|75|100|26|35|55|69|73|0
+6|49|49|428|374|605|98|70|90|30|40|46|73|67|0
+6|46|50|419|366|634|101|56|83|35|37|54|71|73|0
+7|1|1|539.5|487.5|60|95|111|98.5|63|59|61|86|86|0
+7|2|2|535.5|484.5|64|101|116|65.5|77|62|63|88|88|0
+7|0|3|534.5|489.5|66|104|104|102.5|48|74|57|94|82|0
+7|3|4|534|485|68|102|98|100|69|50|66|76|89|0
+7|5|5|521.5|470.5|78|107|105|88.5|54|61|55|87|80|0
+7|9|6|507.5|455.5|94|100|102|88.5|43|60|62|87|87|0
+7|8|7|505|453|97|104|95|81|54|56|63|83|88|0
+7|4|8|501.5|456.5|100|102|108|71.5|53|73|49|93|74|0
+7|10|9|499|448|106|95|109|57|72|61|54|87|79|0
+7|7|10|481.5|429.5|143|100|104|73.5|40|54|58|81|83|0
+7|27|11|472.5|423.5|167|89|114|52.5|55|47|66|73|89|0
+7|19|12|464|413|184|93|104|56|53|51|56|77|81|0
+7|17|13|462|412|191|110|86|75|44|55|42|82|65|0
+7|6|14|460.5|408.5|195|90|105|63.5|34|55|61|82|86|0
+7|36|15|459.5|408.5|199|97|104|55.5|51|57|44|84|68|0
+7|11|16|456|412|206|94|111|52|50|67|38|90|59|0
+7|15|17|455.5|405.5|207|103|82|82.5|40|39|59|64|84|0
+7|16|18|451.5|401.5|220|91|94|70.5|32|49|65|75|89|0
+7|20|19|444.5|393.5|236|85|91|76.5|43|50|48|76|73|0
+7|24|20|439.5|389.5|251|96|77|66.5|49|45|56|70|81|0
+7|12|21|435|387|268|104|85|69|39|50|40|76|62|0
+7|37|22|431|381|285|99|90|52|42|42|56|67|81|0
+7|31|23|428|377|297|83|81|68|48|53|44|80|68|0
+7|13|24|427.5|377.5|299|103|88|51.5|43|47|45|73|69|0
+7|21|25|424|376|312|102|98|57|31|48|40|74|62|0
+7|23|26|423|374|316|92|87|67|35|46|47|71|71|0
+7|22|27|421.5|371.5|323|107|78|66.5|29|42|49|67|74|0
+7|35|28|418.5|372.5|334|94|95|45.5|56|45|37|70|58|0
+7|39|29|415|363|353|92|64|65|37|57|48|84|73|0
+7|18|30|412.5|365.5|361|95|61|86.5|39|44|40|69|62|0
+7|38|31|412|361|362|91|79|46|45|53|47|80|71|0
+7|44|31|412|362|362|96|84|43|45|48|46|74|70|0
+7|25|33|410|361|370|97|72|74|38|33|47|58|71|0
+7|43|34|409.5|364.5|374|93|76|86.5|39|35|35|60|55|0
+7|42|35|402|353|395|103|70|52|38|45|45|70|69|0
+7|40|36|398|352|408|97|80|67|28|43|37|68|58|0
+7|34|37|396|347|420|93|72|54|39|43|46|68|70|0
+7|30|38|394.5|348.5|423|98|41|83.5|46|42|38|67|59|0
+7|29|39|394|343|425|86|35|82|39|52|49|78|74|0
+7|26|40|390|342|442|92|85|44|33|47|41|73|63|0
+7|45|41|385.5|338.5|462|91|71|68.5|31|37|40|62|62|0
+7|50|42|380.5|333.5|484|90|78|40.5|44|40|41|65|63|0
+7|28|43|379|333|489|109|51|82|24|29|38|54|59|0
+7|49|44|378.5|328.5|492|85|48|73.5|27|41|54|66|79|0
+7|51|45|376.5|334.5|497|99|78|59.5|23|44|31|69|48|0
+7|47|46|368.5|319.5|521|95|83|44.5|24|29|44|54|68|0
+7|33|47|364|319|540|96|48|70|27|42|36|67|56|0
+7|32|48|363.5|314.5|541|91|40|64.5|35|39|45|64|69|0
+7|48|49|356|307|563|100|39|61|28|34|45|59|69|0
+7|46|50|344.5|297.5|597|84|41|65.5|29|37|41|62|63|0
+8|8|1|520.5|484.5|54|107|87|95.5|66|63|66|80|85|0
+8|0|2|518|487|60|98|105|83|50|75|76|89|93|0
+8|5|3|514.5|480.5|64|97|90|88.5|68|66|71|82|89|0
+8|3|4|513|477|66|92|109|97|53|62|64|79|83|0
+8|1|4|513|481|66|91|95|73|76|80|66|93|85|0
+8|2|6|498.5|462.5|81|100|89|91.5|71|63|48|80|67|0
+8|4|7|474.5|441.5|131|97|78|66.5|60|72|68|87|86|0
+8|6|8|470.5|437.5|139|89|85|76.5|45|69|73|85|90|0
+8|27|8|470.5|435.5|139|93|85|70.5|70|69|48|85|67|0
+8|16|10|463|429|153|82|75|82|53|65|72|81|90|0
+8|10|10|463|430|153|86|90|58|68|77|51|91|70|0
+8|9|12|461.5|425.5|159|96|94|93.5|41|57|44|75|62|0
+8|15|13|458.5|421.5|168|109|63|77.5|57|55|60|73|79|0
+8|11|14|456|421|176|84|98|73|58|64|44|81|62|0
+8|24|15|448.5|413.5|204|96|70|90.5|43|65|49|81|68|0
+8|18|16|448|413|207|93|73|81|47|68|51|84|70|0
+8|39|17|442.5|405.5|225|90|73|79.5|52|54|57|72|76|0
+8|7|18|442|405|228|95|60|84|52|56|58|74|77|0
+8|20|19|441|406|233|82|59|80|64|68|53|84|72|0
+8|36|20|434.5|400.5|248|93|76|67.5|41|70|53|85|72|0
+8|19|21|432.5|397.5|256|87|76|67.5|55|66|46|82|65|0
+8|13|22|424|390|298|84|82|76|48|62|38|79|55|0
+8|31|23|422.5|385.5|304|86|75|65.5|47|58|54|76|73|0
+8|12|24|418.5|381.5|327|94|76|70.5|51|49|41|68|59|0
+8|29|25|416.5|378.5|337|88|58|73.5|48|50|61|69|80|0
+8|23|26|412.5|377.5|358|81|84|81.5|37|58|36|76|53|0
+8|37|27|410.5|373.5|366|78|80|77.5|47|48|43|67|61|0
+8|35|28|409|373|374|93|83|50|45|57|45|75|63|0
+8|25|29|408.5|372.5|375|88|51|90.5|43|58|42|76|60|0
+8|17|30|405.5|371.5|389|85|71|73.5|40|64|38|81|55|0
+8|26|30|405.5|367.5|389|78|67|70.5|48|50|54|69|73|0
+8|21|32|399|362|418|86|70|95|26|42|43|61|61|0
+8|45|32|399|361|418|81|55|88|43|44|50|63|69|0
+8|34|34|398|361|422|88|56|72|31|55|59|73|78|0
+8|22|35|397.5|359.5|425|89|64|77.5|34|45|50|64|69|0
+8|43|36|397|359|426|88|58|84|31|50|48|69|67|0
+8|30|37|395.5|357.5|437|95|41|91.5|33|46|51|65|70|0
+8|38|38|388.5|353.5|468|72|72|65.5|31|66|47|82|66|0
+8|40|39|386.5|353.5|474|90|50|83.5|40|58|32|76|47|0
+8|51|40|385|347|478|87|57|69|40|46|48|65|67|0
+8|48|41|384|346|481|95|40|80|41|40|50|59|69|0
+8|50|42|381|343|497|71|79|68|27|50|48|69|67|0
+8|42|43|380.5|343.5|503|96|55|63.5|41|43|45|62|63|0
+8|44|44|380|343|505|84|53|53|45|56|52|74|71|0
+8|47|45|365.5|331.5|571|78|48|66.5|44|59|36|76|53|0
+8|32|45|365.5|329.5|571|80|62|65.5|35|49|38|68|55|0
+8|46|47|362.5|327.5|588|90|49|69.5|36|49|34|68|50|0
+8|28|48|359|323|604|95|54|75|24|38|37|57|54|0
+8|49|49|348.5|314.5|640|83|58|71.5|31|39|32|58|47|0
+8|33|50|340|303|671|92|33|78|22|34|44|53|62|0
+`;
+/* @data-end */
+
+/* @logic-start */
+let DB = parsePack(PACK);
+const SUBJ = [
+  {k:'y', n:'语文', full:150},
+  {k:'m', n:'数学', full:150},
+  {k:'e', n:'英语', full:150},
+  {k:'p', n:'物理', full:100},
+  {k:'c', n:'化学', full:100, fu:'fc'},
+  {k:'b', n:'生物', full:100, fu:'fb'}
+];
+const SUBJ_OF = Object.fromEntries(SUBJ.map(s => [s.k, s]));
+const LINE_KEY = 'lp2403.lines.v1';
+const SUBLINE_KEY = 'lp2403.sublines.v1';
+const IMPORT_KEY = 'lp2403.imported.v1';
+
+// 预置划线：按年级给的当次划线预填，页面上仍可逐场修改
+const LINE_DEFAULT = {
+  E1:428, E2:443, E3:429, E4:490, E5:479.5, E6:417, E7:482
+};
+const SUBLINE_DEFAULT = {
+  E1:{y:100, m:75,  e:78,   p:28, c:80, b:81},
+  E2:{y:92,  m:68,  e:89.5, p:44, c:80, b:81},
+  E3:{y:99,  m:85,  e:85,   p:35, c:79, b:80},
+  E4:{y:99,  m:102, e:92,   p:50, c:80, b:80},
+  E7:{y:103, m:87,  e:93,   p:51, c:80, b:80}
+};
+
+function lineSOf(i){
+  const el = DB.exams[i];
+  if (!el.lineS) el.lineS = {};
+  return el.lineS;
+}
+function sLine(i, k){
+  const e = DB.exams[i];
+  if (!e || !e.lineS) return null;
+  const v = e.lineS[k];
+  return (v === null || v === undefined || !Number.isFinite(v)) ? null : v;
+}
+
+function numOrNull(v){
+  if (v === '' || v === undefined || v === null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function blankDB(){
+  return {names:[], exams:[], recs:[], byStu:[], byExam:[]};
+}
+
+function parsePack(text, db){
+  db = db || blankDB();
+  const lines = String(text || '').split('\n');
+  let mode = '';
+  for (const raw of lines){
+    const ln = raw.replace(/\r$/, '');
+    if (!ln.trim()) continue;
+    if (ln.startsWith('names:')){
+      const arr = ln.slice(6).split(',').filter(Boolean);
+      arr.forEach(n => { if (!db.names.includes(n)) db.names.push(n); });
+      mode = 'names';
+      continue;
+    }
+    if (ln.startsWith('exam:')){
+      const p = ln.slice(5).split('|');
+      if (!p[0]) continue;
+      if (db.exams.some(e => e.id === p[0])) continue;   // 同 id 不重复并入
+      db.exams.push({
+        id:p[0], label:p[1] || p[0], short:p[2] || p[1] || p[0],
+        title:p[3] || '', line:numOrNull(p[4]), idx:db.exams.length
+      });
+      mode = 'exam';
+      continue;
+    }
+    if (ln.startsWith('rows:')){ mode = 'rows'; continue; }
+    if (mode !== 'rows') continue;
+    const p = ln.split('|');
+    if (p.length < 14) continue;
+    const si = Number(p[1]);
+    if (!Number.isInteger(si) || si < 0 || si >= db.names.length) continue;
+    const rec = {
+      e:Number(p[0]), si, cr:numOrNull(p[2]), fu:numOrNull(p[3]), raw:numOrNull(p[4]),
+      sr:numOrNull(p[5]),
+      s:{y:numOrNull(p[6]), m:numOrNull(p[7]), e:numOrNull(p[8]),
+         p:numOrNull(p[9]), c:numOrNull(p[10]), b:numOrNull(p[11])},
+      fc:numOrNull(p[12]), fb:numOrNull(p[13]), est:p[14] === '1'
+    };
+    if (rec.fu === null || rec.cr === null) continue;
+    db.recs.push(rec);
+  }
+  indexDB(db);
+  return db;
+}
+
+function indexDB(db){
+  db.byStu = db.names.map(() => new Array(db.exams.length).fill(null));
+  db.byExam = db.exams.map(() => []);
+  for (const r of db.recs){
+    if (!db.byStu[r.si]) continue;
+    db.byStu[r.si][r.e] = r;
+    db.byExam[r.e].push(r);
+  }
+  db.byExam.forEach(a => a.sort((x, y) => (x.cr || 999) - (y.cr || 999)));
+}
+
+/* ---------- 基础统计 ---------- */
+function st(vals){
+  const v = vals.filter(x => x !== null && Number.isFinite(x));
+  if (!v.length) return null;
+  const n = v.length;
+  const sum = v.reduce((a, b) => a + b, 0);
+  const avg = sum / n;
+  const so = [...v].sort((a, b) => a - b);
+  const med = n % 2 ? so[(n - 1) / 2] : (so[n / 2 - 1] + so[n / 2]) / 2;
+  const sd = Math.sqrt(v.reduce((a, b) => a + (b - avg) ** 2, 0) / n);
+  return {n, sum, avg, max:so[n - 1], min:so[0], med, sd};
+}
+
+function quant(arr, q){
+  const a = [...arr].sort((x, y) => x - y);
+  if (!a.length) return null;
+  const pos = (a.length - 1) * q;
+  const lo = Math.floor(pos), hi = Math.ceil(pos);
+  return a[lo] + (a[hi] - a[lo]) * (pos - lo);
+}
+
+function rankIn(list, val){
+  let r = 1;
+  for (const v of list) if (v > val) r++;
+  return r;
+}
+
+function slope(ys){
+  const n = ys.length;
+  if (n < 2) return 0;
+  const xs = ys.map((_, i) => i);
+  const mx = (n - 1) / 2;
+  const my = ys.reduce((a, b) => a + b, 0) / n;
+  let sxy = 0, sxx = 0;
+  for (let i = 0; i < n; i++){ sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; }
+  return sxx ? sxy / sxx : 0;
+}
+
+function fmt(v, d){
+  if (v === null || v === undefined || !Number.isFinite(v)) return '—';
+  const nd = d === undefined ? 1 : d;
+  return v.toFixed(nd).replace(/\.0+$/, '').replace(/(\.\d)0$/, '$1');
+}
+function pct(v, d){ return v === null || !Number.isFinite(v) ? '—' : fmt(v, d === undefined ? 1 : d) + '%'; }
+function signed(v, d){
+  if (v === null || !Number.isFinite(v)) return '—';
+  return (v > 0 ? '+' : v < 0 ? '−' : '±') + fmt(Math.abs(v), d === undefined ? 1 : d);
+}
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------- 考试维度 ---------- */
+function examRecs(i){ return DB.byExam[i] || []; }
+
+function examStat(i){
+  const recs = examRecs(i);
+  const fu = recs.map(r => r.fu);
+  const base = st(fu);
+  const subj = {};
+  for (const s of SUBJ){
+    const raw = recs.map(r => r.s[s.k]);
+    const bs = st(raw);
+    const p = bs ? bs.avg / s.full * 100 : null;
+    const fuVals = s.fu ? recs.map(r => r[s.fu]) : null;
+    subj[s.k] = {
+      st:bs, rate:p,
+      fu:fuVals ? st(fuVals) : null,
+      rateMax: bs ? bs.max / s.full * 100 : null,
+      rateMin: bs ? bs.min / s.full * 100 : null,
+      p25: bs ? quant(raw.filter(v => v !== null), .25) / s.full * 100 : null,
+      p50: bs ? quant(raw.filter(v => v !== null), .50) / s.full * 100 : null,
+      p75: bs ? quant(raw.filter(v => v !== null), .75) / s.full * 100 : null,
+      spread: bs ? (quant(raw.filter(v => v !== null), .75) - quant(raw.filter(v => v !== null), .25)) / s.full * 100 : null
+    };
+  }
+  const sr = st(recs.map(r => r.sr));
+  return {i, recs, base, subj, sr, line:DB.exams[i].line};
+}
+
+function passList(i){
+  const line = DB.exams[i].line;
+  if (line === null) return null;
+  return examRecs(i).filter(r => r.fu >= line).sort((a, b) => b.fu - a.fu);
+}
+
+/* ---------- 学生维度 ---------- */
+function stuRecs(si){ return DB.byStu[si].filter(Boolean); }
+
+function stuStat(si){
+  const arr = DB.byStu[si];
+  const have = arr.map((r, i) => r ? i : -1).filter(i => i >= 0);
+  const last = have.length ? arr[have[have.length - 1]] : null;
+  const prevIdx = have.length > 1 ? have[have.length - 2] : -1;
+  const srSeries = have.map(i => (arr[i].sr === null ? null : arr[i].sr));
+  const crSeries = have.map(i => arr[i].cr);
+  const fuSeries = have.map(i => arr[i].fu);
+  const srVals = srSeries.filter(v => v !== null);
+  return {
+    have, last, prevIdx, srSeries, crSeries, fuSeries,
+    srSlope: srVals.length > 1 ? slope(srVals) : 0,
+    srSd: srVals.length > 1 ? st(srVals).sd : 0,
+    srBest: srVals.length ? Math.min(...srVals) : null,
+    srWorst: srVals.length ? Math.max(...srVals) : null
+  };
+}
+
+/* ---------- 赋分推算（缺单科赋分时用） ---------- */
+function gainCurve(key){
+  // 取最近一次公布了单科赋分的考试，作为原始分→增益的经验曲线
+  const pts = [];
+  for (let i = DB.exams.length - 1; i >= 0; i--){
+    const valid = examRecs(i).filter(r => r.s[key] !== null &&
+      (key === 'c' ? r.fc : r.fb) !== null && !r.est);
+    if (valid.length >= 10){
+      valid.forEach(r => pts.push([r.s[key], (key === 'c' ? r.fc : r.fb) - r.s[key]]));
+      break;
+    }
+  }
+  if (!pts.length) return () => 20;
+  pts.sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const [x, y] of pts){
+    if (merged.length && merged[merged.length - 1][0] === x) merged[merged.length - 1][1] = (merged[merged.length - 1][1] + y) / 2;
+    else merged.push([x, y]);
+  }
+  return function(x){
+    if (merged.length === 1) return merged[0][1];
+    if (x <= merged[0][0]) return merged[0][1];
+    if (x >= merged[merged.length - 1][0]) return merged[merged.length - 1][1];
+    for (let i = 0; i < merged.length - 1; i++){
+      if (merged[i][0] <= x && x <= merged[i + 1][0]){
+        const dx = merged[i + 1][0] - merged[i][0];
+        return dx ? merged[i][1] + (x - merged[i][0]) * (merged[i + 1][1] - merged[i][1]) / dx : merged[i][1];
+      }
+    }
+    return merged[merged.length - 1][1];
+  };
+}
+/* @logic-end */
+/* ============================================================
+   第二部分：视图与交互
+   ============================================================ */
+(function(){
+'use strict';
+
+const $ = s => document.querySelector(s);
+const C = {
+  ink:'#1A211E', ink2:'#47524C', ink3:'#79837C', rule:'#D3D7CC', grid:'#EDEFE6',
+  green:'#20584A', green2:'#3C7A64', green3:'#DCE8E0', red:'#A5382A',
+  amber:'#8A6B22', blue:'#2B5B8A', sheet:'#FAFBF7', mute:'#A9B8AE'
+};
+const FONT = '"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,sans-serif';
+const SERIF = '"Source Han Serif SC","Noto Serif SC","SimSun",serif';
+
+const S = {
+  view:'class',
+  exam:DB.exams.length - 1,
+  student:null,
+  cmp:null,
+  showSubj:true,
+  sort:{key:'cr', dir:1}
+};
+
+let chartInsts = [];
+
+/* ---------- 存储 ---------- */
+function lsGet(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k, v){ try{ window.localStorage.setItem(k, v); return true; }catch(e){ return false; } }
+function lsDel(k){ try{ window.localStorage.removeItem(k); }catch(e){} }
+
+/* ---------- 提示 ---------- */
+let toastTimer = null;
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 2600);
+}
+
+/* ---------- 图表 ---------- */
+function disposeCharts(){
+  chartInsts.forEach(c => { try{ c.dispose(); }catch(e){} });
+  chartInsts = [];
+}
+function chart(dom, option){
+  if (!window.echarts){
+    dom.innerHTML = '<div class="chart-fallback">图表库未加载：本页图表由 ECharts 渲染，需要联网打开。<br>下方表格与文字分析不依赖图表，可正常使用。</div>';
+    return null;
+  }
+  const inst = echarts.init(dom, null, {renderer:'canvas'});
+  inst.setOption(option);
+  chartInsts.push(inst);
+  return inst;
+}
+function axisCommon(){
+  return {
+    axisLine:{ lineStyle:{ color:C.rule } },
+    axisTick:{ show:false },
+    axisLabel:{ color:C.ink3, fontSize:11, fontFamily:FONT }
+  };
+}
+function yCommon(max, name){
+  return {
+    type:'value', max:max, name:name || '',
+    nameTextStyle:{ color:C.ink3, fontSize:10.5, padding:[0,0,0,0] },
+    splitLine:{ lineStyle:{ color:C.grid } },
+    axisLabel:{ color:C.ink3, fontSize:11, fontFamily:FONT }
+  };
+}
+function tip(){
+  return {
+    trigger:'axis', confine:true,
+    backgroundColor:'#fff', borderColor:C.rule, borderWidth:1,
+    padding:[8,10],
+    textStyle:{ color:C.ink, fontSize:12, fontFamily:FONT },
+    extraCssText:'box-shadow:0 4px 16px rgba(26,33,30,.10);border-radius:2px'
+  };
+}
+
+/* ---------- 考试时间轴 ---------- */
+function renderTimeline(){
+  const box = $('#timeline');
+  const isStu = S.view === 'student' && S.student !== null;
+  const stuIdx = isStu ? S.student : -1;
+  box.innerHTML = DB.exams.map((e, i) => {
+    let val, sub;
+    if (isStu){
+      const r = DB.byStu[stuIdx] ? DB.byStu[stuIdx][i] : null;
+      val = r ? fmt(r.fu) : '缺考';
+      sub = r && e.line !== null ? (r.fu >= e.line ? '达线' : '未达') : '';
+    } else {
+      const a = examRecs(i);
+      val = a.length ? fmt(st(a.map(r => r.fu)).avg) : '—';
+      sub = '均分';
+    }
+    return '<button class="tl-node" role="tab" data-i="' + i + '" aria-selected="' + (i === S.exam) + '">' +
+      '<span class="idx">' + String(i + 1).padStart(2, '0') + '</span>' +
+      '<span class="lab">' + esc(e.short) + '</span>' +
+      '<span class="val">' + val + '<small>' + sub + '</small></span>' +
+      '</button>';
+  }).join('');
+  box.querySelectorAll('.tl-node').forEach(b => {
+    b.addEventListener('click', () => {
+      S.exam = Number(b.dataset.i);
+      renderTimeline();
+      if (S.view === 'class') renderClass();
+      else if (S.view === 'edge') renderEdge();
+      else if (S.student !== null) renderStudent();
+    });
+  });
+  $('#tlTitle').textContent = isStu ? '他的九次考试' : '考试序列';
+  const cur = DB.exams[S.exam];
+  const sel = box.querySelector('.tl-node[aria-selected="true"]');
+  if (sel && box.scrollWidth > box.clientWidth + 2){
+    try{ sel.scrollIntoView({block:'nearest', inline:'center'}); }catch(e){}
+  }
+  $('#tlNote').textContent = isStu
+    ? '点一次看那次的成绩构成'
+    : (cur ? cur.label + ' · ' + cur.title.replace(/^2403班/, '') : '');
+}
+
+/* ---------- 班级：划线 ---------- */
+function renderLine(){
+  const i = S.exam, ex = DB.exams[i];
+  const inp = $('#lineInput');
+  if (document.activeElement !== inp) inp.value = ex.line === null ? '' : ex.line;
+  const row = $('#subjLineRow');
+  if (row){
+    SUBJ.forEach(s => {
+      const el = row.querySelector('input[data-k="' + s.k + '"]');
+      const v = sLine(i, s.k);
+      if (el && document.activeElement !== el) el.value = v === null ? '' : v;
+    });
+    const n = SUBJ.filter(s => sLine(i, s.k) !== null).length;
+    $('#subjLineTip').textContent = n
+      ? n + '/6 科已录入 · 名册里低于该科线的分数标绿'
+      : '留空则不比对；化、生请填赋分线';
+  }
+  const out = $('#lineOut');
+  if (ex.line === null){
+    out.innerHTML = '<span class="none">未录入划线</span>　录入后自动标记达线学生，并按本机保存';
+  } else {
+    const p = passList(i) || [];
+    const rate = examRecs(i).length ? p.length / examRecs(i).length * 100 : 0;
+    const recs = examRecs(i);
+    const near = recs.filter(r => r.fu < ex.line).sort((a, b) => b.fu - a.fu).slice(0, 2);
+    const above = p.length ? recs.filter(r => r.fu >= ex.line).sort((a, b) => a.fu - b.fu)[0] : null;
+    out.innerHTML = '达线 <b>' + p.length + '</b> 人 · 达线率 <b>' + fmt(rate) + '%</b>' +
+      (above ? '　线上末位 <b>' + esc(DB.names[above.si]) + ' ' + fmt(above.fu) + '</b>' : '') +
+      (near.length ? '　线下最近 ' + near.map(r => '<b>' + esc(DB.names[r.si]) + ' ' + fmt(r.fu) + '</b>（差 ' + fmt(ex.line - r.fu) + ' 分）').join('、') : '');
+  }
+}
+
+/* ---------- 班级：KPI ---------- */
+function renderKPI(){
+  const i = S.exam;
+  const cs = examStat(i);
+  const prev = i > 0 ? examStat(i - 1) : null;
+  const n = cs.recs.length;
+  const prevN = prev ? prev.recs.length : null;
+  const top = cs.recs.reduce((a, b) => (b.fu > a.fu ? b : a), cs.recs[0]);
+  const bot = cs.recs.reduce((a, b) => (b.fu < a.fu ? b : a), cs.recs[0]);
+  const dAvg = prev && prev.base ? cs.base.avg - prev.base.avg : null;
+  const pass = passList(i);
+  const prevPass = prev ? passList(i - 1) : null;
+  const rate = pass ? pass.length / n * 100 : null;
+
+  const cells = [
+    ['参测人数', fmt(n, 0) + '<span>人</span>', prevN !== null ? '较上次 ' + signed(n - prevN, 0) + ' 人' : '在册 ' + DB.names.length + ' 人'],
+    ['赋分均分', fmt(cs.base.avg) + '<span>分</span>', dAvg !== null ? '<span class="' + (dAvg >= 0 ? 'up' : 'down') + '">' + signed(dAvg) + '</span> 较上次' : '满分 750'],
+    ['最高分', fmt(cs.base.max) + '<span>分</span>', esc(top ? DB.names[top.si] : '—')],
+    ['中位数', fmt(cs.base.med) + '<span>分</span>', '最低 ' + fmt(cs.base.min)],
+    ['标准差', fmt(cs.base.sd) + '<span>分</span>', '班内差距 ' + fmt(cs.base.max - cs.base.min) + ' 分'],
+    ['校排名中位', cs.sr ? fmt(cs.sr.med, 0) + '<span>名</span>' : '—', '最好 ' + fmt(cs.sr ? cs.sr.min : null, 0) + ' · 最差 ' + fmt(cs.sr ? cs.sr.max : null, 0)],
+    ['达线人数', pass ? '<span class="up">' + pass.length + '</span><span>人</span>' : '—<span>人</span>',
+      pass ? (prevPass ? '较上次 ' + signed(pass.length - prevPass.length, 0) + ' 人' : '划线 ' + fmt(DB.exams[i].line) + ' 分') : '未录入划线'],
+    ['达线率', rate !== null ? fmt(rate) + '<span>%</span>' : '—', pass ? '线内 ' + pass.length + ' / ' + n : '录入划线后计算']
+  ];
+  $('#kpi').innerHTML = cells.map(c =>
+    '<div class="kpi-cell"><div class="k">' + c[0] + '</div><div class="v">' + c[1] + '</div><div class="d">' + c[2] + '</div></div>'
+  ).join('');
+}
+
+/* ---------- 班级：名册 ---------- */
+function subjColor(v, avg, full){
+  if (v === null || avg === null) return '';
+  const d = (v - avg) / full * 100;
+  if (d >= 5) return 'subj-hi';
+  if (d <= -5) return 'subj-lo';
+  return '';
+}
+
+function rosterData(){
+  const i = S.exam;
+  const cs = examStat(i);
+  const prevRecs = i > 0 ? examRecs(i - 1) : [];
+  const prevSr = {};
+  prevRecs.forEach(r => prevSr[r.si] = r.sr);
+  return examRecs(i).map(r => {
+    const psr = prevSr[r.si];
+    const chg = (psr && r.sr) ? psr - r.sr : null;   // 正 = 名次前进
+    return {r, chg};
+  }).sort((a, b) => {
+    const k = S.sort.key, sign = S.sort.dir;
+    let va, vb;
+    if (k === 'chg'){ va = a.chg === null ? -9999 : a.chg; vb = b.chg === null ? -9999 : b.chg; }
+    else if (k === 'name'){ return sign * DB.names[a.r.si].localeCompare(DB.names[b.r.si], 'zh'); }
+    else if (SUBJ_OF[k]){ va = a.r.s[k]; vb = b.r.s[k]; }
+    else { va = a.r[k]; vb = b.r[k]; }
+    if (va === null) va = -9999;
+    if (vb === null) vb = -9999;
+    return sign * (va - vb);
+  });
+}
+
+function renderRoster(){
+  const i = S.exam;
+  const cs = examStat(i);
+  const line = DB.exams[i].line;
+  const narrow = window.innerWidth < 760;
+  const showSubj = S.showSubj && !narrow;
+  const showRaw = !narrow;
+  const rows = rosterData();
+  const nSub = SUBJ.filter(s => sLine(i, s.k) !== null).length;
+
+  let cols = '<colgroup><col style="width:44px"><col style="width:80px"><col style="width:60px">';
+  if (showRaw) cols += '<col style="width:56px">';
+  cols += '<col style="width:52px"><col style="width:58px">';
+  if (showSubj) cols += SUBJ.map(() => '<col>').join('') + '<col style="width:46px"><col style="width:46px">';
+  cols += '<col style="width:48px"></colgroup>';
+
+  const thSub = showSubj ? SUBJ.map(s => {
+    const lv = sLine(i, s.k);
+    return '<th data-key="' + s.k + '" title="' + s.n + (lv !== null ? ' · 特控线 ' + fmt(lv) : '') + '（点击排序）">' + s.n + '</th>';
+  }).join('') + '<th data-key="fc" title="化学赋分（计入总分）">化赋</th>' +
+    '<th data-key="fb" title="生物赋分（计入总分）">生赋</th>' : '';
+
+  const html =
+    '<table class="roster">' + cols +
+    '<thead><tr>' +
+    '<th data-key="cr" class="l">班排</th>' +
+    '<th data-key="name" class="l">姓名</th>' +
+    '<th data-key="fu">赋分总分</th>' +
+    (showRaw ? '<th data-key="raw">原始总分</th>' : '') +
+    '<th data-key="sr">校排名</th>' +
+    '<th data-key="chg">校排进退</th>' +
+    thSub +
+    '<th class="l">特控</th>' +
+    '</tr></thead><tbody>' +
+    rows.map(o => {
+      const r = o.r;
+      const pass = line !== null && r.fu >= line;
+      const cells = showSubj ? SUBJ.map(s => {
+        const raw = r.s[s.k];
+        const avg = cs.subj[s.k].st ? cs.subj[s.k].st.avg : null;
+        const lv = s.fu ? null : sLine(i, s.k);            // 化、生按赋分比线，原始列不参与
+        const miss = lv !== null && raw !== null && raw < lv;
+        return '<td class="num ' + subjColor(raw, avg, s.full) + (miss ? ' miss' : '') +
+          '" title="班均 ' + fmt(avg) + (lv !== null ? ' · 特控线 ' + fmt(lv) : '') + '">' + fmt(raw) + '</td>';
+      }).join('') : '';
+      const fuCells = showSubj ? SUBJ.filter(s => s.fu).map(s => {
+        const v = r[s.fu];
+        const lv = sLine(i, s.k);
+        const miss = lv !== null && v !== null && v < lv;
+        return '<td class="num' + (miss ? ' miss' : '') + '" title="' + s.n + '赋分' +
+          (lv !== null ? ' · 特控线 ' + fmt(lv) : '') + '">' + fmt(v) + '</td>';
+      }).join('') : '';
+      return '<tr class="' + (pass ? 'pass' : '') + '">' +
+        '<td class="l num">' + r.cr + '</td>' +
+        '<td class="l name-cell' + (pass ? ' name-pass' : '') + '">' + esc(DB.names[r.si]) + '</td>' +
+        '<td class="num"><b>' + fmt(r.fu) + '</b></td>' +
+        (showRaw ? '<td class="num">' + fmt(r.raw) + '</td>' : '') +
+        '<td class="num">' + fmt(r.sr, 0) + '</td>' +
+        '<td class="num ' + (o.chg === null ? '' : (o.chg > 0 ? 'up' : o.chg < 0 ? 'down' : '')) + '">' +
+          (o.chg === null ? '—' : (o.chg > 0 ? '↑' + o.chg : o.chg < 0 ? '↓' + Math.abs(o.chg) : '—')) + '</td>' +
+        cells + fuCells +
+        '<td class="l">' + (pass ? '<span class="stamp">特控</span>' : '') + '</td>' +
+        '</tr>';
+    }).join('') +
+    '</tbody></table>';
+
+  $('#rosterWrap').innerHTML = html;
+  $('#rosterWrap').querySelectorAll('thead th[data-key]').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.key;
+      if (S.sort.key === k) S.sort.dir *= -1;
+      else { S.sort.key = k; S.sort.dir = (k === 'sr' || k === 'cr' || k === 'chg' || k === 'raw' || k === 'fu') ? 1 : -1; }
+      renderRoster();
+    });
+  });
+  const lineTxt = line === null ? '未录入划线' : '划线 ' + fmt(line) + ' 分';
+  $('#rosterSub').textContent = rows.length + ' 人 · ' + lineTxt +
+    (nSub ? ' · 单科线 ' + nSub + ' 科已比对' : '') +
+    (narrow ? ' · 手机上点姓名列可对照' : ' · 点表头可排序');
+}
+
+/* ---------- 班级：简报 ---------- */
+function renderBrief(){
+  const i = S.exam;
+  const cs = examStat(i);
+  const prev = i > 0 ? examStat(i - 1) : null;
+  const n = cs.recs.length;
+  const pass = passList(i);
+  const line = DB.exams[i].line;
+  const L = [];
+
+  const top = [...cs.recs].sort((a, b) => b.fu - a.fu);
+  const dAvg = prev && prev.base ? cs.base.avg - prev.base.avg : null;
+  L.push('<b>' + esc(DB.exams[i].label) + '</b> 参测 ' + n + ' 人，赋分均分 <b>' + fmt(cs.base.avg) + '</b>' +
+    (dAvg !== null ? '（较上次 <b>' + signed(dAvg) + '</b> 分）' : '') +
+    '，最高 <b>' + fmt(cs.base.max) + '</b>（' + esc(DB.names[top[0].si]) + '），最低 <b>' + fmt(cs.base.min) + '</b>（' +
+    esc(DB.names[top[n - 1].si]) + '），标准差 ' + fmt(cs.base.sd) + ' 分。');
+
+  if (line !== null && pass){
+    const near = top.filter(r => r.fu < line).sort((a, b) => b.fu - a.fu).slice(0, 3);
+    const prevPass = prev ? passList(i - 1) : null;
+    L.push('特控线 <b>' + fmt(line) + '</b> 分，达线 <b>' + pass.length + '</b> 人（' + fmt(pass.length / n * 100) + '%）' +
+      (prevPass ? '，较上次 ' + signed(pass.length - prevPass.length, 0) + ' 人' : '') + '。' +
+      (near.length ? '线下最近的是 ' + near.map(r => esc(DB.names[r.si]) + '（' + fmt(r.fu) + '，差 ' + fmt(line - r.fu) + ' 分）').join('、') + '，属临界冲刺对象。' : ''));
+  } else {
+    L.push('本次<b>尚未录入特控线</b>，达线人数与临界名单暂不计。按当次划线在页首录入后，名册会自动加"特控"标记。');
+  }
+
+  const rates = SUBJ.map(s => ({s, v:cs.subj[s.k].rate})).filter(o => o.v !== null);
+  if (rates.length){
+    const hi = rates.reduce((a, b) => (b.v > a.v ? b : a));
+    const lo = rates.reduce((a, b) => (b.v < a.v ? b : a));
+    const sp = SUBJ.map(s => ({s, v:cs.subj[s.k].spread})).filter(o => o.v !== null);
+    const widest = sp.length ? sp.reduce((a, b) => (b.v > a.v ? b : a)) : null;
+    L.push('学科得分率最高的是 <b>' + hi.s.n + '</b>（' + fmt(hi.v) + '%），最低是 <b>' + lo.s.n + '</b>（' + fmt(lo.v) + '%），相差 ' +
+      fmt(hi.v - lo.v) + ' 个百分点。' +
+      (widest ? '<b>' + widest.s.n + '</b> 的班内离散最大（中间 50% 跨 ' + fmt(widest.v) + ' 个百分点），分层教学的重点在这一科。' : ''));
+  }
+
+  if (prev){
+    const prevSr = {};
+    examRecs(i - 1).forEach(r => prevSr[r.si] = r.sr);
+    const changes = examRecs(i).map(r => {
+      const p = prevSr[r.si];
+      return p && r.sr ? {si:r.si, d:p - r.sr} : null;
+    }).filter(Boolean);
+    if (changes.length){
+      const up = [...changes].sort((a, b) => b.d - a.d).slice(0, 3);
+      const down = [...changes].sort((a, b) => a.d - b.d).slice(0, 3);
+      L.push('校排名进步最大的是 ' + up.map(o => '<b>' + esc(DB.names[o.si]) + '</b>（↑' + o.d + ' 名）').join('、') +
+        '；退步最明显的是 ' + down.map(o => '<b>' + esc(DB.names[o.si]) + '</b>（↓' + Math.abs(o.d) + ' 名）').join('、') + '。');
+    }
+  }
+
+  const tail = top.slice(-5).reverse();
+  L.push('赋分总分后 5 位是 ' + tail.map(r => esc(DB.names[r.si]) + '（' + fmt(r.fu) + '）').join('、') +
+    '，建议优先安排一对一谈，先稳基础题得分率，再谈名次。');
+
+  $('#classBrief').innerHTML = '<h3>本次要点</h3><ul class="bullets">' +
+    L.map((t, k) => '<li><span class="mk">' + String(k + 1).padStart(2, '0') + '</span><span>' + t + '</span></li>').join('') +
+    '</ul>' + edgeBriefHtml(i);
+}
+
+/* ---------- 临界生 ---------- */
+const EDGE_BAND = 10;
+
+function edgeSubs(r, cs, i){
+  return SUBJ.map(s => {
+    const v = r.s[s.k];
+    const fu = s.fu ? r[s.fu] : null;
+    const avg = cs.subj[s.k].st ? cs.subj[s.k].st.avg : null;
+    const rp = v === null ? null : v / s.full * 100;
+    const ap = avg === null ? null : avg / s.full * 100;
+    const ln = sLine(i, s.k);
+    const cv = s.fu ? fu : v;
+    return { s, v, fu, cv, avg, rp, ap, ln,
+      d: (rp !== null && ap !== null) ? rp - ap : null,
+      gap: (rp !== null && ap !== null) ? (ap - rp) / 100 * s.full : null };
+  });
+}
+
+function edgeList(i){
+  const line = DB.exams[i].line;
+  if (line === null) return null;
+  const cs = examStat(i);
+  return examRecs(i).map(r => {
+    const subs = edgeSubs(r, cs, i);
+    const known = subs.filter(x => x.d !== null);
+    const worst = known.length ? known.reduce((a, b) => (b.d < a.d ? b : a)) : null;
+    const best = known.length ? known.reduce((a, b) => (b.d > a.d ? b : a)) : null;
+    return { si:r.si, r, subs, worst, best, gap:r.fu - line, cs };
+  }).filter(o => Math.abs(o.gap) <= EDGE_BAND + 0.001)
+    .sort((a, b) => b.gap - a.gap);
+}
+
+function edgeIssues(o, i){
+  const r = o.r, issues = [];
+  const miss = o.subs.filter(x => x.ln !== null && x.cv !== null && x.cv < x.ln);
+  if (miss.length){
+    const sum = miss.reduce((a, x) => a + (x.ln - x.cv), 0);
+    issues.push('单科线没守住：' + miss.map(x => x.s.n + ' ' + fmt(x.cv) + (x.s.fu ? '（赋分）' : '') +
+      '，线 ' + fmt(x.ln) + '，差 ' + fmt(x.ln - x.cv) + ' 分').join('；') +
+      '。合计 ' + fmt(sum) + ' 分，正好是他卡在线上线下的分差来源——补回一半就够翻过去。');
+  }
+  const w = o.worst;
+  if (w && w.d < -2){
+    issues.push('最拖后的是 <b>' + w.s.n + '</b>：得分率 ' + pct(w.rp) + '，比班均低 ' +
+      fmt(Math.abs(w.d)) + ' 个百分点，折算约 ' + fmt(w.gap) + ' 分。');
+  } else if (w){
+    issues.push('六科都在班均以上，但高出不多（最低 ' + w.s.n + ' ' + signed(w.d) +
+      ' 个百分点），缺一科能稳定拉分的尖科；总分靠均衡撑，一科失手就掉线。');
+  }
+  const prev = i > 0 ? DB.byStu[o.si][i - 1] : null;
+  if (prev && prev.fu !== null){
+    const dFu = r.fu - prev.fu;
+    const dSr = (prev.sr !== null && r.sr !== null) ? r.sr - prev.sr : null;
+    if (dFu <= -8){
+      issues.push('较上次回落：赋分 ' + fmt(prev.fu) + ' → ' + fmt(r.fu) + '（' + signed(dFu) + ' 分）' +
+        (dSr !== null ? '，校排名 ' + fmt(prev.sr, 0) + ' → ' + fmt(r.sr, 0) + '（' +
+          (dSr > 0 ? '退 ' + dSr : '进 ' + Math.abs(dSr)) + ' 名）' : '') +
+        '，先查清是某一科整块失分，还是考场节奏出了问题。');
+    } else if (dFu >= 8){
+      issues.push('较上次进步 ' + signed(dFu) + ' 分（' + fmt(prev.fu) + ' → ' + fmt(r.fu) +
+        '），这套打法有效，重点是固定下来，别退回旧习惯。');
+    }
+  }
+  const blanks = o.subs.filter(x => x.v === null).map(x => x.s.n);
+  if (blanks.length) issues.push('本次 ' + blanks.join('、') + ' 缺考或缺分，总分与名次只作参考。');
+  if (!issues.length) issues.push('本次没有明显失分点，分差主要来自结构：每科都稳，但没有哪一科能多拿 10 分。');
+  return issues.slice(0, 3);
+}
+
+function edgeAdvice(o, i){
+  const onLine = o.gap >= 0;
+  const tiny = Math.abs(o.gap) < 2;
+  const need = (onLine || tiny) ? 12 : Math.abs(o.gap);
+  const needTxt = (onLine || tiny)
+    ? '要再稳出 ' + fmt(need) + ' 分的缓冲（现在距线 ' + fmt(Math.abs(o.gap)) + ' 分，一场就够翻过去，也一场就够掉回去）'
+    : '还差 ' + fmt(need) + ' 分';
+  const w = o.worst, b = o.best;
+  const hW = w ? Math.max(2, Math.min(6, Math.round((Math.abs(w.gap || 6) || 6) / 3))) : 3;
+  const t1 = Math.max(2, Math.round(need * 0.6));
+  const t2 = Math.max(1, Math.round(need - t1));
+  const out = [];
+  if (w) out.push('<b>先补' + w.s.n + '</b>：' + ADVICE[w.s.k].replace(/。$/, '') +
+    '　一轮里每周给这科 ' + hW + ' 小时，放在头脑最清醒的时段。');
+  out.push('<b>分数拆开补</b>：' + needTxt + '，拆到两科上——' +
+    (w ? w.s.n + ' 补 ' + fmt(t1) + ' 分' : '短板科补 ' + fmt(t1) + ' 分') +
+    (b && b !== w ? '、' + b.s.n + ' 再稳 ' + fmt(t2) + ' 分' : '、另一科再稳 ' + fmt(t2) + ' 分') +
+    '；落到卷面就是每科多拿 2–3 道基础题，不是去攻压轴。');
+  out.push('<b>一轮按“章—练—测”走</b>：每章先合书默画框架，再回课本补缺口，最后 10 道基础题 + 2 道中档题；' +
+    '每周一次限时小卷，按“这一次比上一次少错几道”验收，不看刷题量。');
+  return out;
+}
+
+function edgeCard(o, i){
+  const r = o.r;
+  const gapTxt = o.gap === 0 ? '正好压线'
+    : (o.gap > 0 ? '线上 +' + fmt(o.gap) + ' 分' : '线下 ' + fmt(Math.abs(o.gap)) + ' 分');
+  return '<article class="edge-card">' +
+    '<div class="hd">' +
+      '<b>' + esc(DB.names[o.si]) + '</b>' +
+      '<span class="meta">赋分 ' + fmt(r.fu) + ' · 班排 ' + r.cr + ' · 校排 ' + fmt(r.sr, 0) + '</span>' +
+      '<span class="gap ' + (o.gap >= 0 ? 'pos' : 'neg') + '">' + gapTxt + '</span>' +
+      '<button class="mini-btn" data-si="' + o.si + '">看个人档案</button>' +
+    '</div>' +
+    '<div class="rows">' +
+      '<div class="blk"><span class="k">这次的问题</span><ul>' +
+        edgeIssues(o, i).map((t, k) => '<li><span class="n">' + String(k + 1).padStart(2, '0') + '</span><span>' + t + '</span></li>').join('') +
+      '</ul></div>' +
+      '<div class="blk"><span class="k">一轮复习怎么抓</span><ul>' +
+        edgeAdvice(o, i).map((t, k) => '<li><span class="n">' + String(k + 1).padStart(2, '0') + '</span><span>' + t + '</span></li>').join('') +
+      '</ul></div>' +
+    '</div>' +
+  '</article>';
+}
+
+function edgeBriefHtml(i){
+  const head = '<h3 class="h3-2">临界生<span class="sub">距线 ±' + EDGE_BAND + ' 分内</span></h3>';
+  const line = DB.exams[i].line;
+  if (line === null){
+    return head + '<p class="edge-p">本次还没录入特控线，临界名单待划线后自动生成；在页首录入当次划线即可。</p>';
+  }
+  const eg = edgeList(i);
+  if (!eg.length){
+    return head + '<p class="edge-p">本次没有学生落在特控线 ±' + EDGE_BAND + ' 分内。</p>';
+  }
+  const up = eg.filter(o => o.gap >= 0).length, dn = eg.length - up;
+  const cnt = {};
+  eg.forEach(o => { const w = o.worst; if (w && w.d < -2) cnt[w.s.n] = (cnt[w.s.n] || 0) + 1; });
+  const ks = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]);
+  const lead = ks.length
+    ? '最集中拖分的是 <b>' + ks[0] + '</b>（' + cnt[ks[0]] + ' 人低于班均 2 个百分点以上）'
+    : '六科都在班均附近，分差主要来自总分结构';
+  return '<h3 class="h3-2">临界生<span class="sub">距线 ±' + EDGE_BAND + ' 分内 · 线上守线 ' + up +
+      ' 人、线下冲刺 ' + dn + ' 人</span></h3>' +
+    '<p class="edge-p">共 <b>' + eg.length + '</b> 人，' + lead + '。逐人的问题与一轮复习抓手见「临界生」页。</p>' +
+    '<div class="tblwrap" style="margin-top:10px"><table class="detail">' +
+    '<colgroup><col style="width:16%"><col style="width:13%"><col style="width:13%"><col style="width:11%"><col style="width:11%"><col style="width:26%"><col style="width:10%"></colgroup>' +
+    '<thead><tr><th class="l">姓名</th><th>赋分</th><th>距线</th><th>班排</th><th>校排</th><th class="l">最弱一科（比班均）</th><th class="l">定位</th></tr></thead><tbody>' +
+    eg.map(o =>
+      '<tr><td class="l"><span class="name-cell">' + esc(DB.names[o.si]) + '</span></td>' +
+      '<td>' + fmt(o.r.fu) + '</td>' +
+      '<td class="' + (o.gap > 0 ? 'good' : o.gap < 0 ? 'bad' : '') + '">' +
+        (o.gap === 0 ? '0' : (o.gap > 0 ? '+' : '−') + fmt(Math.abs(o.gap))) + '</td>' +
+      '<td>' + o.r.cr + '</td><td>' + fmt(o.r.sr, 0) + '</td>' +
+      '<td class="l">' + (o.worst ? o.worst.s.n + ' ' + signed(o.worst.d) + ' pp' : '—') + '</td>' +
+      '<td class="l">' + (o.gap >= 0 ? '守线' : '冲刺') + '</td></tr>').join('') +
+    '</tbody></table></div>';
+}
+
+function renderEdge(){
+  disposeCharts();
+  const i = S.exam, ex = DB.exams[i], line = ex.line;
+  const sel = $('#edgeExam');
+  if (sel && document.activeElement !== sel) sel.value = String(i);
+  $('#edgeSub').textContent = ex.label + (line === null ? ' · 未录入特控线' : ' · 特控线 ' + fmt(line) + ' 分（赋分总分）');
+  const host = $('#edgeList'), wrap = $('#edgeChartWrap');
+  if (line === null){
+    $('#edgeHint').textContent = '距线 ±' + EDGE_BAND + ' 分内即为临界生';
+    if (wrap) wrap.hidden = true;
+    host.innerHTML = '<div class="edge-none">这次还没有录入特控线，判不出谁在临界范围内。到「班级总览」页首录入当次划线（每次不同），这里会自动生成名单与逐人分析。</div>';
+    return;
+  }
+  const eg = edgeList(i);
+  const up = eg.filter(o => o.gap >= 0), dn = eg.filter(o => o.gap < 0);
+  $('#edgeHint').textContent = '线上守线 ' + up.length + ' 人 · 线下冲刺 ' + dn.length +
+    ' 人（赋分总分距线 ±' + EDGE_BAND + ' 分内）';
+  if (!eg.length){
+    if (wrap) wrap.hidden = true;
+    host.innerHTML = '<div class="edge-none">这次没有学生落在特控线 ±' + EDGE_BAND +
+      ' 分内——离得最近的一位也在 ' + EDGE_BAND + ' 分以外。下一场考完、录入新划线后再看。</div>';
+    return;
+  }
+  if (wrap) wrap.hidden = false;
+  const cs = examStat(i);
+  const edgeRate = SUBJ.map(s => {
+    const vals = eg.map(o => { const x = o.subs.find(y => y.s.k === s.k); return x ? x.rp : null; }).filter(v => v !== null);
+    return vals.length ? st(vals).avg : null;
+  });
+  const classRate = SUBJ.map(s => cs.subj[s.k].rate);
+  chart($('#edgeChart'), {
+    animationDuration:500,
+    grid:{ left:42, right:14, top:22, bottom:26 },
+    tooltip: Object.assign(tip(), { formatter: p => p[0].name + '<br>' +
+      p.map(x => x.marker + x.seriesName + ' <b>' + fmt(x.value) + '%</b>').join('<br>') }),
+    xAxis: Object.assign({ type:'category', data: SUBJ.map(s => s.n) }, axisCommon()),
+    yAxis: Object.assign(yCommon(100, '得分率 %'), { min:0 }),
+    series:[
+      { name:(eg.length === 1 ? esc(DB.names[eg[0].si]) : '临界生群体'), type:'bar', barWidth:'32%', itemStyle:{ color:C.amber },
+        data: edgeRate.map(v => (v === null ? null : Math.round(v * 10) / 10)) },
+      { name:'全班', type:'bar', barWidth:'32%', itemStyle:{ color:C.mute },
+        data: classRate.map(v => (v === null ? null : Math.round(v * 10) / 10)) }
+    ]
+  });
+  host.innerHTML = eg.map(o => edgeCard(o, i)).join('');
+  host.querySelectorAll('.mini-btn[data-si]').forEach(b =>
+    b.addEventListener('click', () => pickStudent(Number(b.dataset.si))));
+}
+
+
+/* ---------- 班级图表 ---------- */
+const BIN_EDGES = [330, 380, 430, 480, 530, 580, 630];
+
+function renderClassCharts(){
+  disposeCharts();
+  const i = S.exam;
+  const cs = examStat(i);
+  const line = DB.exams[i].line;
+
+  /* 1. 分段分布 */
+  const labels = [], counts = [], colors = [];
+  for (let b = 0; b < BIN_EDGES.length - 1; b++){
+    const lo = BIN_EDGES[b], hi = BIN_EDGES[b + 1];
+    labels.push(lo + '–' + (hi - 1));
+    let c = 0;
+    if (b === 0) c = cs.recs.filter(r => r.fu < hi).length;
+    else if (b === BIN_EDGES.length - 2) c = cs.recs.filter(r => r.fu >= lo).length;
+    else c = cs.recs.filter(r => r.fu >= lo && r.fu < hi).length;
+    counts.push(c);
+    if (line === null) colors.push(C.green2);
+    else if (line >= lo && line < hi) colors.push(C.amber);
+    else if (line >= hi) colors.push(C.mute);
+    else colors.push(C.green2);
+  }
+  $('#distNote').textContent = line === null ? '按 50 分一档' : '琥珀＝含特控线的一档';
+  $('#distSub').textContent = '均分 ' + fmt(cs.base.avg) + ' · 中位 ' + fmt(cs.base.med) + ' · 极差 ' + fmt(cs.base.max - cs.base.min);
+
+  chart($('#chartDist'), {
+    animationDuration:500,
+    grid:{ left:34, right:14, top:24, bottom:26 },
+    tooltip: Object.assign(tip(), {formatter: p => p[0].name + ' 分段：<b>' + p[0].value + '</b> 人'}),
+    xAxis: Object.assign({ type:'category', data:labels, name:'赋分总分' }, axisCommon()),
+    yAxis: Object.assign(yCommon(null, '人'), { minInterval:1 }),
+    series:[{
+      type:'bar', barWidth:'52%',
+      data: counts.map((v, k) => ({ value:v, itemStyle:{ color:colors[k] } })),
+      label:{ show:true, position:'top', color:C.ink2, fontSize:11, fontFamily:FONT },
+      emphasis:{ itemStyle:{ color:C.green } }
+    }]
+  });
+
+  /* 2. 六科得分率 */
+  const sNames = SUBJ.map(s => s.n);
+  const rates = SUBJ.map(s => cs.subj[s.k].rate);
+  const valid = rates.filter(v => v !== null);
+  const hiV = valid.length ? Math.max(...valid) : 0;
+  const loV = valid.length ? Math.min(...valid) : 0;
+  chart($('#chartSubj'), {
+    animationDuration:500,
+    grid:{ left:42, right:30, top:22, bottom:30 },
+    tooltip: Object.assign(tip(), {formatter: p => {
+      const o = p[0], s = SUBJ[o.dataIndex], d = cs.subj[s.k];
+      return s.n + '<br>班均 <b>' + fmt(d.st ? d.st.avg : null) + '</b> / ' + s.full +
+        '（' + fmt(d.rate) + '%）<br>最高 ' + fmt(d.st ? d.st.max : null) + ' · 最低 ' + fmt(d.st ? d.st.min : null) +
+        (d.fu ? '<br>赋分均分 <b>' + fmt(d.fu.avg) + '</b>' : '');
+    }}),
+    xAxis: Object.assign({ type:'category', data:sNames }, axisCommon()),
+    yAxis: yCommon(100, '%'),
+    series:[{
+      type:'bar', barWidth:'54%',
+      data: rates.map(v => ({
+        value: v === null ? 0 : Math.round(v * 10) / 10,
+        itemStyle:{ color: v === hiV ? C.green : (v === loV ? C.red : '#5F7F71') }
+      })),
+      label:{ show:true, position:'top', formatter: p => fmt(p.value) + '%', color:C.ink2, fontSize:11, fontFamily:FONT },
+      markLine:{
+        silent:true, symbol:'none',
+        lineStyle:{ color:C.rule, width:1, type:'dashed' },
+        label:{ show:true, formatter:'60%', color:C.ink3, fontSize:10, position:'end' },
+        data:[{ yAxis:60 }]
+      }
+    }]
+  });
+
+  /* 3. 离散度（得分率箱线） */
+  const box = SUBJ.map(s => {
+    const d = cs.subj[s.k];
+    const raw = cs.recs.map(r => r.s[s.k]).filter(v => v !== null);
+    if (!raw.length) return [0, 0, 0, 0, 0];
+    return [d.rateMin, d.p25, d.p50, d.p75, d.rateMax].map(v => Math.round(v * 10) / 10);
+  });
+  chart($('#chartBox'), {
+    animationDuration:500,
+    grid:{ left:42, right:30, top:22, bottom:30 },
+    tooltip: Object.assign(tip(), {formatter: p => {
+      if (p.seriesType !== 'boxplot') return '';
+      const s = SUBJ[p.dataIndex], v = p.data;
+      return s.n + ' 得分率<br>最高 ' + fmt(v[5]) + '% · 上四分 ' + fmt(v[4]) + '%<br>中位 ' + fmt(v[3]) +
+        '% · 下四分 ' + fmt(v[2]) + '%<br>最低 ' + fmt(v[1]) + '%';
+    }}),
+    xAxis: Object.assign({ type:'category', data:sNames, boundaryGap:true }, axisCommon()),
+    yAxis: yCommon(100, '%'),
+    series:[{
+      type:'boxplot', boxWidth:[10, 34],
+      itemStyle:{ color:'#E8EFE9', borderColor:C.green2, borderWidth:1.2 },
+      data: box
+    }]
+  });
+
+  /* 4. 与上次对比 */
+  const prev = i > 0 ? examStat(i - 1) : null;
+  const dom = $('#chartDelta');
+  if (!prev){
+    dom.innerHTML = '<div class="chart-fallback" style="color:#79837C">这是九次考试中的第一次，没有可比的上一次。</div>';
+    $('#deltaNote').textContent = '首次考试';
+  } else {
+    $('#deltaNote').textContent = DB.exams[i - 1].short + ' → ' + DB.exams[i].short;
+    const diffs = SUBJ.map(s => {
+      const a = cs.subj[s.k].rate, b = prev.subj[s.k].rate;
+      return (a === null || b === null) ? 0 : a - b;
+    });
+    const totalDiff = cs.base.avg - prev.base.avg;
+    chart(dom, {
+      animationDuration:500,
+      grid:{ left:78, right:56, top:22, bottom:26 },
+      tooltip: Object.assign(tip(), {formatter: p => {
+        const s = SUBJ[p[0].dataIndex];
+        return s.n + ' 得分率变化 <b>' + signed(p[0].value) + '</b> 个百分点<br>本次 ' +
+          fmt(cs.subj[s.k].rate) + '% · 上次 ' + fmt(prev.subj[s.k].rate) + '%';
+      }}),
+      xAxis: yCommon(null, '百分点'),
+      yAxis: Object.assign({ type:'category', data:sNames }, axisCommon(), { splitLine:{ show:false } }),
+      series:[{
+        type:'bar', barWidth:'58%',
+        data: diffs.map(v => ({ value:Math.round(v * 10) / 10, itemStyle:{ color: v >= 0 ? C.green2 : C.red } })),
+        label:{ show:true, position:'right', formatter: p => signed(p.value), color:C.ink2, fontSize:11, fontFamily:FONT },
+        markLine:{ silent:true, symbol:'none', label:{ show:false }, lineStyle:{ color:C.rule, width:1 }, data:[{ xAxis:0 }] }
+      }],
+      graphic:[{
+        type:'text', right:6, top:4,
+        style:{ text:'总分均分 ' + signed(totalDiff) + ' 分', fill:C.ink3, fontSize:11, fontFamily:FONT, textAlign:'right' }
+      }]
+    });
+  }
+}
+
+
+/* ---------- 个人：学情分析 ---------- */
+const ADVICE = {
+  y:'语文先抓确定分：默写、文言实词、实用类文本选择题这三块靠清单化积累就能拿住；作文每两周固定一篇，写完当场面批。',
+  m:'数学按“错题归因”推进：把近三次卷子的错题分成概念不清、计算失误、不会切入三类，计算类当天重做一遍，一周内复测同类题。',
+  e:'英语先把词汇补到能读懂长句：每天 30 个词加一篇限时阅读，听力每天 15 分钟精听，重点抓数字、转折和否定。',
+  p:'物理先过模型：受力分析、能量守恒、带电粒子运动三类各整理 5 道典型题，做题先画图再列式，减少“会但算错”。',
+  c:'化学回到基础：方程式、离子共存、实验现象逐条过关，选择题限时训练，把“犹豫但做对”的题单独标出来。',
+  b:'生物以教材为本：黑体字、旁栏思考、课后练习过一遍，概念用两两对比表整理，避免术语混用。'
+};
+
+function buildProfile(si){
+  const ss = stuStat(si);
+  const have = ss.have;
+  const lastIdx = have[have.length - 1];
+  const last = ss.last;
+  const cs = examStat(lastIdx);
+  const line = DB.exams[lastIdx].line;
+  const dline = line === null ? null : last.fu - line;
+
+  const subs = SUBJ.map(s => {
+    const v = last.s[s.k];
+    const list = examRecs(lastIdx).map(r => r.s[s.k]).filter(x => x !== null);
+    const avg = cs.subj[s.k].st ? cs.subj[s.k].st.avg : null;
+    const rp = v === null ? null : v / s.full * 100;
+    const ap = avg === null ? null : avg / s.full * 100;
+    return {
+      s, v, avg, rp, ap,
+      d: (rp !== null && ap !== null) ? rp - ap : null,
+      gap: (rp !== null && ap !== null) ? (ap - rp) / 100 * s.full : null,
+      rank: v === null ? null : rankIn(list, v),
+      total: list.length,
+      fu: s.fu ? last[s.fu] : null
+    };
+  });
+  const known = subs.filter(o => o.d !== null);
+  const best = known.length ? known.reduce((a, b) => (b.d > a.d ? b : a)) : null;
+  const worst = known.length ? known.reduce((a, b) => (b.d < a.d ? b : a)) : null;
+
+  // 排名走势：近 5 次
+  const win = have.slice(-5);
+  const srWin = win.map(i => DB.byStu[si][i].sr).filter(v => v !== null);
+  const tSlope = srWin.length > 1 ? slope(srWin) : 0;
+  const tSpan = srWin.length > 1 ? (srWin[0] - srWin[srWin.length - 1]) : 0;
+
+  // 单科波动
+  const vol = SUBJ.map(s => {
+    const vals = have.map(i => {
+      const v = DB.byStu[si][i].s[s.k];
+      return v === null ? null : v / s.full * 100;
+    }).filter(v => v !== null);
+    return {s, sd: vals.length > 1 ? st(vals).sd : 0, vals};
+  }).sort((a, b) => b.sd - a.sd)[0];
+
+  // 连续下滑的科目
+  const drops = SUBJ.map(s => {
+    const idxs = have.slice(-3).filter(i => DB.byStu[si][i].s[s.k] !== null);
+    if (idxs.length < 3) return null;
+    const a = DB.byStu[si][idxs[0]].s[s.k] / s.full * 100;
+    const b = DB.byStu[si][idxs[2]].s[s.k] / s.full * 100;
+    return {s, a, b, d: b - a};
+  }).filter(o => o && o.d <= -6).sort((x, y) => x.d - y.d);
+
+  const sdAll = ss.srSd;
+  const trendWord = tSlope <= -12 ? '明显上升' : tSlope <= -4 ? '稳中有升'
+    : tSlope >= 12 ? '明显下滑' : tSlope >= 4 ? '缓慢下滑' : '基本平稳';
+  const trendTone = tSlope <= -4 ? 'good' : tSlope >= 4 ? 'warn' : '';
+  const stabWord = sdAll >= 80 ? '起伏很大' : sdAll >= 45 ? '有一定波动' : '较稳定';
+  const stabTone = sdAll >= 80 ? 'warn' : '';
+
+  const tier = last.cr <= 5 ? '班内前五' : last.cr <= 15 ? '班内中上' : last.cr <= 30 ? '班内中游'
+    : last.cr <= 42 ? '班内中下' : '班内后段';
+
+  const critical = dline !== null && Math.abs(dline) <= 25;
+
+  return {si, ss, have, lastIdx, last, cs, line, dline, subs, best, worst,
+    tSlope, tSpan, vol, drops, sdAll, trendWord, trendTone, stabWord, stabTone,
+    tier, critical, missing: DB.exams.length - have.length};
+}
+
+/* ---------- 个人：一轮复习建议（姓名下方） ---------- */
+const TIER_LINE = {
+  '班内前五': '守住做题手感，把每一道“会做”的题都做到一次就对',
+  '班内中上': '把基础题得分率提到 90% 以上，向班内前十挤',
+  '班内中游': '先把每个模块的必得分吃干净，再谈难题',
+  '班内中下': '放弃超纲题，守住基础题和中档题的分',
+  '班内后段': '先把最简单的基础题一分不丢，再逐章补漏'
+};
+
+function reviewAdvice(P){
+  const w = P.worst, b = P.best, s = P.ss;
+  const hW = w ? Math.max(2, Math.min(6, Math.round(Math.abs(w.gap || 0) / 3))) : 3;
+  const judge = '你在班内属于' + P.tier.replace('班内', '') + '，' + P.trendWord + '、' + P.stabWord +
+    (w ? '；六科里 <b>' + w.s.n + '</b> 离班均最远（' + signed(w.d) + ' 个百分点）' : '') +
+    (b ? '，<b>' + b.s.n + '</b> 领先 ' + fmt(b.d) + ' 个百分点' : '') +
+    '。一轮复习对你的定位：' + (TIER_LINE[P.tier] || '把基础题分数先拿稳') + '。';
+  const items = [];
+  if (w) items.push('<em>01</em><b>补短板</b>' + ADVICE[w.s.k].replace(/。$/, '') + '　每周固定给它 ' + hW + ' 小时，放在头脑最清醒的时段。');
+  items.push('<em>02</em><b>过一轮</b>按“章—练—测”三步走：每章先不翻书画出知识框架，再回课本补缺口，最后做 10 道基础题 + 2 道中档题；当天错题当天归因。');
+  items.push('<em>03</em><b>配时间</b>' + (w ? w.s.n + ' ' + hW + ' 小时/周，' : '') +
+    (b ? b.s.n + ' 维持 2 小时/周；' : '') + '每天留 40 分钟做“回头题”：三天前、一周前的错题各 2 道。');
+  return '<div class="advice"><h4>一轮复习建议 · 谈给本人听</h4>' +
+    '<p>' + judge + '</p>' + items.map(t => '<p>' + t + '</p>').join('') +
+    '<p class="rule">验收标准不是刷了多少题，而是不看书能不能把一章的框架讲出来；讲不出来就回去重画。</p></div>';
+}
+
+/* ---------- 个人：档案卡 ---------- */
+function renderCard(P){
+  const name = DB.names[P.si];
+  const ex = DB.exams[P.lastIdx];
+  const lineTxt = P.line === null ? '未划线'
+    : P.dline >= 0 ? '线上 ' + fmt(P.dline) + ' 分'
+    : '线下 ' + fmt(Math.abs(P.dline)) + ' 分';
+  const tags = [];
+  tags.push('<span class="tag ' + P.trendTone + '">' + P.trendWord + '</span>');
+  tags.push('<span class="tag ' + P.stabTone + '">' + P.stabWord + '</span>');
+  if (P.worst && P.worst.d < 0) tags.push('<span class="tag warn">短板 ' + P.worst.s.n + '</span>');
+  else if (P.best && P.best.d > 0) tags.push('<span class="tag good">优势 ' + P.best.s.n + '</span>');
+  if (P.dline !== null) tags.push('<span class="tag ' + (P.dline >= 0 ? 'good' : 'warn') + '">' + (P.dline >= 0 ? '在特控线上' : '未达特控线') + '</span>');
+  if (P.missing) tags.push('<span class="tag">缺考 ' + P.missing + ' 次</span>');
+
+  $('#stuCard').innerHTML =
+    '<div class="who"><h2>' + esc(name) + '</h2><div class="cl">2403班 · ' + P.tier + '</div></div>' +
+    reviewAdvice(P) +
+    '<div class="stats">' +
+      '<div class="st"><div class="k">赋分总分 · ' + esc(ex.short) + '</div><div class="v">' + fmt(P.last.fu) + '<small>分</small></div></div>' +
+      '<div class="st"><div class="k">班排名</div><div class="v">' + P.last.cr + '<small>/ ' + P.cs.recs.length + '</small></div></div>' +
+      '<div class="st"><div class="k">校排名</div><div class="v">' + fmt(P.last.sr, 0) + '<small>名</small></div></div>' +
+      '<div class="st"><div class="k">与特控线</div><div class="v" style="font-size:18px">' + lineTxt + '</div></div>' +
+    '</div>' +
+    '<div class="tags">' + tags.join('') + '</div>';
+}
+
+/* ---------- 个人：谈话稿 ---------- */
+function renderTalk(P){
+  const name = DB.names[P.si];
+  const ss = P.ss;
+  const first = ss.fuSeries[0], lastFu = P.last.fu;
+  const fuMax = Math.max(...ss.fuSeries), fuMin = Math.min(...ss.fuSeries);
+  const maxIdx = ss.have[ss.fuSeries.indexOf(fuMax)], minIdx = ss.have[ss.fuSeries.indexOf(fuMin)];
+  const srFirst = ss.srSeries[0], srLast = P.last.sr;
+  const bullets = [];
+
+  // 1 走势
+  bullets.push(['走势', '九次赋分总分 ' + fmt(first) + ' → ' + fmt(lastFu) + '，峰值 <b>' + fmt(fuMax) + '</b>（' +
+    esc(DB.exams[maxIdx].short) + '），谷值 <b>' + fmt(fuMin) + '</b>（' + esc(DB.exams[minIdx].short) + '）；校排名 ' +
+    fmt(srFirst, 0) + ' → ' + fmt(srLast, 0) + '，近 5 次' + P.trendWord + '，跨度 <b>' + signed(P.tSpan, 0) + '</b> 名。']);
+
+  // 2 短板
+  if (P.worst && P.worst.d < -1){
+    const w = P.worst;
+    bullets.push(['最大短板', '<b>' + w.s.n + '</b> 得分率 ' + fmt(w.rp) + '%，班均 ' + fmt(w.ap) + '%，低 ' +
+      fmt(Math.abs(w.d)) + ' 个百分点，班内第 ' + w.rank + '/' + w.total +
+      (w.fu !== null ? '（赋分 ' + fmt(w.fu) + '）' : '') + '；按班均水平折算，这一科还有约 <b>' +
+      fmt(Math.abs(w.gap), 0) + ' 分</b>可提，是弹性最大的地方。']);
+  } else if (P.worst){
+    bullets.push(['学科位置', '六科都在班均线以上，最靠后的是 <b>' + P.worst.s.n + '</b>（+' + fmt(P.worst.d) + ' 个百分点），属于全面达标型，重点是守住不掉的科目。']);
+  }
+
+  // 3 优势
+  if (P.best && P.best.d > 1){
+    bullets.push(['可守优势', '<b>' + P.best.s.n + '</b> 得分率 ' + fmt(P.best.rp) + '%，高出班均 ' + fmt(P.best.d) +
+      ' 个百分点，班内第 ' + P.best.rank + '/' + P.best.total + '。这一科保持现有投入即可，多出的时间应挪给短板。']);
+  }
+
+  // 4 波动
+  bullets.push(['稳定性', '校排名九次标准差 <b>' + fmt(P.sdAll, 0) + '</b>，最好第 ' + fmt(ss.srBest, 0) + '、最差第 ' +
+    fmt(ss.srWorst, 0) + '，' + P.stabWord + '；单科里 <b>' + P.vol.s.n + '</b> 波动最大（得分率标准差 ' +
+    fmt(P.vol.sd) + ' 个百分点）。']);
+
+  // 5 风险
+  if (P.critical){
+    bullets.push(['临界提醒', '距离特控线只有 <b>' + fmt(Math.abs(P.dline)) + ' 分</b>，是最典型的临界生：任何一科掉 10 分就会掉线。考前重点不是难题，而是把“会做的做对”。']);
+  } else if (P.dline !== null && P.dline < 0){
+    bullets.push(['距线差距', '距特控线 <b>' + fmt(Math.abs(P.dline)) + ' 分</b>，按当前结构至少要两科同时提 15 分以上才补得回来，建议这学期只锁定一科突破，不要全面铺开。']);
+  } else if (P.dline !== null && P.dline > 60){
+    bullets.push(['目标上移', '已在线上 ' + fmt(P.dline) + ' 分，下一步不是保线而是争上游：把班排名往前 3～5 位，直接对应校排名前 ' + Math.max(1, Math.round(P.last.sr - 60)) + ' 名。']);
+  }
+  if (P.drops.length){
+    const d = P.drops[0];
+    bullets.push(['下滑科目', '<b>' + d.s.n + '</b> 最近三次得分率从 ' + fmt(d.a) + '% 掉到 ' + fmt(d.b) + '%（' +
+      signed(d.d) + ' 个百分点），需要当面问清是听课、作业还是考试节奏的问题。']);
+  }
+
+  // 单科线比对
+  const nSubLine = SUBJ.filter(x => sLine(P.lastIdx, x.k) !== null).length;
+  if (nSubLine){
+    const smiss = P.subs.map(o => ({o, lv: sLine(P.lastIdx, o.s.k), v: o.s.fu ? o.fu : o.v}))
+      .filter(x => x.lv !== null && x.v !== null && x.v < x.lv)
+      .sort((a, b) => (b.lv - b.v) - (a.lv - a.v));
+    if (smiss.length){
+      bullets.push(['单科距线', smiss.map(x => '<b>' + x.o.s.n + (x.o.s.fu ? '（赋分）' : '') + '</b> 差 ' +
+        fmt(x.lv - x.v) + ' 分').join('、') + '，合计 ' +
+        fmt(smiss.reduce((a, x) => a + (x.lv - x.v), 0)) + ' 分；这几科是这一轮最直接的提分位置。']);
+    } else {
+      bullets.push(['单科距线', '六科全部达到本次单科特控线，' +
+        (P.best ? '优势在 <b>' + P.best.s.n + '</b>，' : '') + '重点从“补分”转向“保稳、提速”。']);
+    }
+  }
+
+  // 目标
+  const space = (P.subs.filter(o => o.gap > 0).sort((a, b) => b.gap - a.gap).slice(0, 2))
+    .reduce((a, o) => a + o.gap, 0);
+  const step = Math.max(5, Math.min(40, Math.round(space * 0.5 / 5) * 5));
+  const targetFu = Math.round((P.last.fu + step) * 2) / 2;
+  const targetSr = Math.max(1, Math.round(P.last.sr - (P.tSlope <= -4 ? 30 : 15)));
+  const wSub = P.worst;
+  const subTarget = wSub ? Math.round((wSub.v + Math.max(3, Math.abs(wSub.gap || 0) * 0.5)) * 2) / 2 : null;
+
+  const lead = esc(name) + '，' + esc(DB.exams[P.lastIdx].label) + '赋分总分 <b>' + fmt(P.last.fu) + '</b>，班内第 <b>' +
+    P.last.cr + '</b>、校第 <b>' + fmt(P.last.sr, 0) + '</b>' +
+    (P.dline === null ? '（本次未录入特控线）' : (P.dline >= 0 ? '，在特控线以上 ' + fmt(P.dline) + ' 分' : '，距特控线还差 ' + fmt(Math.abs(P.dline)) + ' 分')) +
+    '。整体看，' + P.trendWord + '、' + P.stabWord + '。';
+
+  const advice = [];
+  if (P.worst && P.worst.d < -1) advice.push(['补短板', ADVICE[P.worst.s.k]]);
+  advice.push(['考试策略', P.critical
+    ? '把每次模考按“必得分／争取分／放弃分”三档标注，先保证必得分全拿；理化生选择题限时 20 分钟做完，留时间给大题第一问。'
+    : '固定每科的做题顺序和时间上限，先拿满基础题再碰压轴；每次考后当天完成错题归档，不要留到下次考前。']);
+  advice.push(['过程管理', '把目标拆到周：短板科每周 2 次专项、1 次限时检测；每周日晚用 10 分钟对照本周完成度，连续两周没完成就调整任务量，而不是加任务。']);
+
+  $('#stuTalk').innerHTML =
+    '<h3>班主任分析<span class="sub">' + esc(name) + ' · 可在谈话时逐条对照</span></h3>' +
+    '<div class="lead">' + lead + '</div>' +
+    '<ul>' + bullets.map(b => '<li><span class="tagm">' + b[0] + '</span><span class="tx">' + b[1] + '</span></li>').join('') +
+      advice.map(b => '<li><span class="tagm">' + b[0] + '</span><span class="tx">' + b[1] + '</span></li>').join('') +
+    '</ul>' +
+    '<div class="goal">' +
+      '<div class="g"><span class="gk">总分目标</span><span class="gv">' + fmt(targetFu) + '<small> 分（+' + step + '）</small></span></div>' +
+      '<div class="g"><span class="gk">校排名目标</span><span class="gv">' + targetSr + '<small> 名（当前 ' + fmt(P.last.sr, 0) + '）</small></span></div>' +
+      (subTarget !== null ? '<div class="g"><span class="gk">单科目标</span><span class="gv">' + wSub.s.n + ' ' + fmt(subTarget) + '<small> 分（当前 ' + fmt(wSub.v) + '，班均 ' + fmt(wSub.avg) + '）</small></span></div>' : '') +
+    '</div>' +
+    '<div class="talk-actions"><button class="mini-btn" id="btnCopy">复制分析全文</button>' +
+    '<button class="mini-btn" id="btnJump">看这次考试的班级位置</button></div>';
+
+  $('#btnCopy').addEventListener('click', () => {
+    const txt = $('#stuTalk').innerText.replace(/\n{3,}/g, '\n\n');
+    const done = () => toast('分析已复制，可直接粘到备忘录或班级群');
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done).catch(() => fallbackCopy(txt, done));
+    } else fallbackCopy(txt, done);
+  });
+  $('#btnJump').addEventListener('click', () => {
+    switchView('class');
+    S.exam = P.lastIdx;
+    renderTimeline(); renderClass();
+    window.scrollTo({ top:$('#kpi').offsetTop - 80, behavior:'smooth' });
+  });
+}
+
+function fallbackCopy(text, done){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); done(); }catch(e){ toast('复制失败，请手动选中文字'); }
+  document.body.removeChild(ta);
+}
+
+
+/* ---------- 个人图表 ---------- */
+function renderPersonalCharts(P){
+  const si = P.si;
+  const shorts = DB.exams.map(e => e.short);
+  const line = P.line;
+
+  /* 总分走势 */
+  const mine = DB.exams.map((e, i) => {
+    const r = DB.byStu[si][i];
+    return r ? Math.round(r.fu * 10) / 10 : null;
+  });
+  const avg = DB.exams.map((e, i) => {
+    const a = examRecs(i);
+    return a.length ? Math.round(st(a.map(r => r.fu)).avg * 10) / 10 : null;
+  });
+  const labelStep = window.innerWidth < 640 ? 2 : 0;
+  $('#scoreNote').textContent = '实线＝本人，虚线＝当次班均';
+  chart($('#chartScore'), {
+    animationDuration:600,
+    grid:{ left:46, right:22, top:28, bottom:26 },
+    tooltip: Object.assign(tip(), {formatter: p => {
+      const i = p[0].dataIndex;
+      return DB.exams[i].label + '<br>本人 <b>' + fmt(mine[i]) + '</b> · 班均 ' + fmt(avg[i]);
+    }}),
+    legend:{ show:true, top:0, left:0, itemWidth:12, itemHeight:2, textStyle:{ fontSize:11, color:C.ink3, fontFamily:FONT } },
+    xAxis: Object.assign({ type:'category', boundaryGap:false, data:shorts,
+      axisLabel:{ color:C.ink3, fontSize:10.5, fontFamily:FONT, interval:labelStep } }, axisCommon()),
+    yAxis: Object.assign(yCommon(null, '分'), { scale:true }),
+    series:[
+      { name:'班均', type:'line', data:avg, symbol:'none',
+        lineStyle:{ width:1, type:'dashed', color:C.ink3 }, z:1 },
+      { name:'本人', type:'line', data:mine, connectNulls:false, symbol:'circle', symbolSize:6,
+        lineStyle:{ width:2.4, color:C.green }, itemStyle:{ color:C.green, borderColor:'#fff', borderWidth:1 },
+        z:3,
+        label:{ show:true, position:'top', color:C.green, fontSize:11, fontFamily:SERIF,
+          formatter: p => (p.dataIndex === mine.filter(v => v !== null).length - 1 || p.value === Math.max(...mine.filter(v => v !== null))) ? fmt(p.value) : '' },
+        markLine: line === null ? undefined : {
+          silent:true, symbol:'none', z:2,
+          lineStyle:{ color:C.red, type:'dashed', width:1 },
+          label:{ formatter:'特控线 ' + fmt(line), position:'insideEndTop', color:C.red, fontSize:10, fontFamily:FONT },
+          data:[{ yAxis:line }]
+        }
+      }
+    ]
+  });
+
+  /* 校排名 */
+  const srData = DB.exams.map((e, i) => {
+    const r = DB.byStu[si][i];
+    return r && r.sr !== null ? r.sr : null;
+  });
+  chart($('#chartSr'), {
+    animationDuration:600,
+    grid:{ left:58, right:24, top:30, bottom:22 },
+    tooltip: Object.assign(tip(), {formatter: p => DB.exams[p[0].dataIndex].label + '<br>校排名 <b>' + fmt(p[0].value, 0) + '</b> 名'}),
+    xAxis: Object.assign({ type:'category', boundaryGap:false, data:shorts,
+      axisLabel:{ color:C.ink3, fontSize:10.5, fontFamily:FONT, interval:labelStep } }, axisCommon()),
+    yAxis: Object.assign(yCommon(null, '校排名'), { inverse:true, scale:true, nameGap:10, nameLocation:'start' }),
+    series:[{ type:'line', data:srData, connectNulls:false, symbol:'circle', symbolSize:5,
+      lineStyle:{ width:2, color:C.blue }, itemStyle:{ color:C.blue },
+      areaStyle:{ color:'rgba(43,91,138,.07)' },
+      label:{ show:true, position:'bottom', color:C.blue, fontSize:10, fontFamily:FONT,
+        formatter: p => p.dataIndex === srData.filter(v => v !== null).length - 1 ? fmt(p.value, 0) : '' } }]
+  });
+
+  /* 班排名 */
+  const crData = DB.exams.map((e, i) => {
+    const r = DB.byStu[si][i];
+    return r ? r.cr : null;
+  });
+  chart($('#chartCr'), {
+    animationDuration:600,
+    grid:{ left:58, right:24, top:30, bottom:22 },
+    tooltip: Object.assign(tip(), {formatter: p => DB.exams[p[0].dataIndex].label + '<br>班排名 <b>' + p[0].value + '</b> / ' + P.cs.recs.length}),
+    xAxis: Object.assign({ type:'category', boundaryGap:false, data:shorts,
+      axisLabel:{ color:C.ink3, fontSize:10.5, fontFamily:FONT, interval:labelStep } }, axisCommon()),
+    yAxis: (function(){
+      const vals = crData.filter(v => v !== null);
+      const hi = vals.length ? Math.max(...vals) : 5;
+      const top = Math.min(P.cs.recs.length, Math.max(6, Math.ceil(hi) + 2));
+      return Object.assign(yCommon(null, '班排名'), {
+        inverse:true, min:1, max:top, nameGap:10, nameLocation:'start',
+        interval: top <= 10 ? 1 : Math.ceil((top - 1) / 5)
+      });
+    })(),
+    series:[{ type:'line', data:crData, connectNulls:false, symbol:'circle', symbolSize:5,
+      lineStyle:{ width:2, color:C.ink2 }, itemStyle:{ color:C.ink2 },
+      areaStyle:{ color:'rgba(71,82,76,.06)' },
+      label:{ show:true, position:'bottom', color:C.ink2, fontSize:10, fontFamily:FONT,
+        formatter: p => p.dataIndex === crData.filter(v => v !== null).length - 1 ? p.value : '' } }]
+  });
+
+  /* 学科结构 */
+  const rows = P.subs.filter(o => o.d !== null).sort((a, b) => b.d - a.d);
+  $('#structNote').textContent = DB.exams[P.lastIdx].short + ' · 本人得分率对班均';
+  chart($('#chartStruct'), {
+    animationDuration:600,
+    grid:{ left:68, right:64, top:14, bottom:20 },
+    tooltip: Object.assign(tip(), {trigger:'item', formatter: p => {
+      const o = rows[p.dataIndex];
+      return o.s.n + '<br>本人 ' + fmt(o.rp) + '%（' + fmt(o.v) + '/' + o.s.full + '）<br>班均 ' + fmt(o.ap) +
+        '%（' + fmt(o.avg) + '）<br>差 <b>' + signed(o.d) + '</b> 个百分点';
+    }}),
+    xAxis: yCommon(null, '百分点'),
+    yAxis: Object.assign({ type:'category', data:rows.map(o => o.s.n) }, axisCommon(), { splitLine:{ show:false } }),
+    series:[{
+      type:'bar', barWidth:'56%',
+      data: rows.map(o => ({ value:Math.round(o.d * 10) / 10, itemStyle:{ color:o.d >= 0 ? C.green2 : C.red } })),
+      label:{ show:true, position:'right', color:C.ink2, fontSize:11, fontFamily:FONT,
+        formatter: p => signed(p.value) + 'pp' },
+      markLine:{ silent:true, symbol:'none', label:{ show:false }, lineStyle:{ color:C.rule, width:1 }, data:[{ xAxis:0 }] }
+    }]
+  });
+
+  /* 六科小倍数 */
+  const grid = $('#chartSubjTrend');
+  grid.innerHTML = SUBJ.map(s => {
+    const vals = DB.exams.map((e, i) => {
+      const r = DB.byStu[si][i];
+      return r && r.s[s.k] !== null ? Math.round(r.s[s.k] / s.full * 1000) / 10 : null;
+    });
+    const avgs = DB.exams.map((e, i) => {
+      const d = examStat(i).subj[s.k];
+      return d.rate === null ? null : Math.round(d.rate * 10) / 10;
+    });
+    const cur = P.subs.find(o => o.s.k === s.k);
+    return '<div class="mini"><div class="mini-h"><b>' + s.n + '</b><span>近次 ' + fmt(cur.rp) + '% · 班均 ' + fmt(cur.ap) + '%</span></div>' +
+      '<div class="mini-c" data-k="' + s.k + '"></div></div>';
+  }).join('');
+  SUBJ.forEach(s => {
+    const dom = grid.querySelector('.mini-c[data-k="' + s.k + '"]');
+    const vals = DB.exams.map((e, i) => {
+      const r = DB.byStu[si][i];
+      return r && r.s[s.k] !== null ? Math.round(r.s[s.k] / s.full * 1000) / 10 : null;
+    });
+    const avgs = DB.exams.map((e, i) => {
+      const d = examStat(i).subj[s.k];
+      return d.rate === null ? null : Math.round(d.rate * 10) / 10;
+    });
+    chart(dom, {
+      animationDuration:400,
+      grid:{ left:30, right:12, top:8, bottom:18 },
+      tooltip: Object.assign(tip(), {confine:true, formatter: p => DB.exams[p[0].dataIndex].short + '<br>本人 ' + fmt(p[0].value) + '%'}),
+      xAxis: Object.assign({ type:'category', boundaryGap:false, data:DB.exams.map(e => e.short),
+        axisLabel:{ color:C.ink3, fontSize:9, fontFamily:FONT, interval:3 } }, axisCommon(), { axisLine:{ lineStyle:{ color:C.grid } } }),
+      yAxis: Object.assign(yCommon(null, ''), { min:0, max:100, interval:50, axisLabel:{ color:C.ink3, fontSize:9, fontFamily:FONT } }),
+      series:[
+        { type:'line', data:avgs, symbol:'none', lineStyle:{ width:1, type:'dashed', color:C.rule } },
+        { type:'line', data:vals, connectNulls:false, symbol:'circle', symbolSize:4,
+          lineStyle:{ width:1.8, color:C.green }, itemStyle:{ color:C.green } }
+      ]
+    });
+  });
+}
+
+/* ---------- 个人明细表 ---------- */
+function renderDetail(si){
+  const head = '<colgroup><col style="width:112px"><col style="width:58px"><col style="width:58px"><col style="width:46px"><col style="width:52px">' +
+    SUBJ.map(() => '<col style="width:44px">').join('') +
+    '<col style="width:52px"><col style="width:52px"></colgroup>' +
+    '<thead><tr><th class="l">考试</th><th>赋分总分</th><th>原始总分</th><th>班排</th><th>校排</th>' +
+    SUBJ.map(s => '<th>' + s.n + '</th>').join('') + '<th>化赋</th><th>生赋</th></tr></thead>';
+  const rows = DB.exams.map((e, i) => {
+    const r = DB.byStu[si][i];
+    const subjCells = SUBJ.map(s => {
+      if (!r) return '<td>—</td>';
+      const v = r.s[s.k];
+      return '<td title="' + e.short + ' ' + s.n + '">' + fmt(v) + '</td>';
+    }).join('');
+    if (!r){
+      return '<tr><td class="l">' + esc(e.short) + '</td><td colspan="' + (5 + SUBJ.length) + '" style="text-align:left;color:#79837C">缺考 / 无记录</td><td colspan="2">—</td></tr>';
+    }
+    return '<tr><td class="l">' + esc(e.short) + '</td><td><b>' + fmt(r.fu) + '</b></td><td>' + fmt(r.raw) + '</td>' +
+      '<td>' + r.cr + '</td><td>' + fmt(r.sr, 0) + '</td>' + subjCells +
+      '<td' + (r.est ? ' title="推算值"' : '') + '>' + fmt(r.fc) + '</td><td' + (r.est ? ' title="推算值"' : '') + '>' + fmt(r.fb) + '</td></tr>';
+  }).join('');
+  $('#stuDetail').innerHTML = '<table class="detail">' + head + '<tbody>' + rows + '</tbody></table>';
+}
+
+/* ---------- 个人：双人对比 ---------- */
+function syncCmpBar(){
+  const bar = $('#cmpBar');
+  if (!bar) return;
+  bar.hidden = S.student === null;
+  if (S.student === null) return;
+  const inp = $('#cmpInput');
+  if (document.activeElement !== inp) inp.value = S.cmp === null ? '' : DB.names[S.cmp];
+  $('#cmpClear').hidden = S.cmp === null;
+  $('#cmpHint').textContent = S.cmp === null
+    ? '输入第二位学生，下面会多出一节“两人对比”，可比较九次成绩、名次、六科结构与差异'
+    : '正在对比 ' + DB.names[S.student] + ' 与 ' + DB.names[S.cmp] + '；改上面的姓名即换人，点“取消对比”回到单人档案';
+}
+
+/* 两人都参测的最近一场 */
+function cmpRefIdx(a, b){
+  for (let i = DB.exams.length - 1; i >= 0; i--){
+    if (DB.byStu[a][i] && DB.byStu[b][i]) return i;
+  }
+  return -1;
+}
+
+function renderCompare(){
+  const box = $('#stuCompare');
+  if (!box) return;
+  const a = S.student, b = S.cmp;
+  if (a === null || b === null || a === b){
+    box.hidden = true; box.innerHTML = '';
+    return;
+  }
+  box.hidden = false;
+
+  const nameA = DB.names[a], nameB = DB.names[b];
+  const A = buildProfile(a), B = buildProfile(b);
+  const ref = cmpRefIdx(a, b);
+  const ea = ref >= 0 ? DB.byStu[a][ref] : null;
+  const eb = ref >= 0 ? DB.byStu[b][ref] : null;
+  const exShort = ref >= 0 ? DB.exams[ref].short : '—';
+  const shorts = DB.exams.map(e => e.short);
+  const step = window.innerWidth < 640 ? 2 : 0;
+
+  /* 同场差值 */
+  const diffs = [];
+  DB.exams.forEach((e, i) => {
+    const x = DB.byStu[a][i], y = DB.byStu[b][i];
+    if (x && y) diffs.push(Math.round((x.fu - y.fu) * 10) / 10);
+  });
+  const dFirst = diffs.length ? diffs[0] : null;
+  const dLast = diffs.length ? diffs[diffs.length - 1] : null;
+  const dAvg = diffs.length ? st(diffs).avg : null;
+
+  /* 指标 */
+  const sA = st(A.ss.fuSeries), sB = st(B.ss.fuSeries);
+  const passA = A.have.filter(i => DB.exams[i].line !== null && DB.byStu[a][i].fu >= DB.exams[i].line).length;
+  const passB = B.have.filter(i => DB.exams[i].line !== null && DB.byStu[b][i].fu >= DB.exams[i].line).length;
+  const lineN = DB.exams.filter(e => e.line !== null).length;
+
+  function show(v, dec, suffix){
+    if (v === null || v === undefined || !Number.isFinite(v)) return '—';
+    return fmt(v, dec) + (suffix || '');
+  }
+  function rowTom(label, va, vb, dir, dec, suffix){
+    let clsA = '', clsB = '', d = null, dcls = '';
+    if (Number.isFinite(va) && Number.isFinite(vb)){
+      d = va - vb;
+      if (dir !== 'none' && va !== vb){
+        const better = dir === 'high' ? va > vb : va < vb;
+        if (better) clsA = ' lead'; else clsB = ' lead';
+      }
+      if (dir !== 'none' && d !== 0) dcls = (dir === 'high' ? d > 0 : d < 0) ? ' good' : ' bad';
+    }
+    return '<tr><td class="k">' + label + '</td>' +
+      '<td class="va' + clsA + '"><b>' + show(va, dec, suffix) + '</b></td>' +
+      '<td class="vb' + clsB + '"><b>' + show(vb, dec, suffix) + '</b></td>' +
+      '<td class="d' + dcls + '">' + (dir === 'none' || d === null ? '—' : d === 0 ? '0' : signed(d, dec)) + '</td></tr>';
+  }
+
+  const rows =
+    rowTom('赋分总分 · ' + exShort, ea ? ea.fu : null, eb ? eb.fu : null, 'high', 1, ' 分') +
+    rowTom('班排名 · ' + exShort, ea ? ea.cr : null, eb ? eb.cr : null, 'low', 0, ' 名') +
+    rowTom('校排名 · ' + exShort, ea ? ea.sr : null, eb ? eb.sr : null, 'low', 0, ' 名') +
+    rowTom('九次赋分均分', sA ? sA.avg : null, sB ? sB.avg : null, 'high', 1, ' 分') +
+    rowTom('九次赋分最高', sA ? sA.max : null, sB ? sB.max : null, 'high', 1, ' 分') +
+    rowTom('九次赋分最低', sA ? sA.min : null, sB ? sB.min : null, 'high', 1, ' 分') +
+    rowTom('总分标准差（小者稳）', sA ? sA.sd : null, sB ? sB.sd : null, 'low', 1, ' 分') +
+    rowTom('校排名标准差（小者稳）', A.ss.srSd, B.ss.srSd, 'low', 0) +
+    rowTom('最好校排名', A.ss.srBest, B.ss.srBest, 'low', 0, ' 名') +
+    rowTom('达线次数（已录线 ' + lineN + ' 场）', passA, passB, 'high', 0, ' 次') +
+    rowTom('化学赋分 · ' + exShort, ea ? ea.fc : null, eb ? eb.fc : null, 'high', 1, ' 分') +
+    rowTom('生物赋分 · ' + exShort, ea ? ea.fb : null, eb ? eb.fb : null, 'high', 1, ' 分') +
+    rowTom('参测次数', A.have.length, B.have.length, 'none', 0, ' 次');
+
+  const table = '<div class="tblwrap"><table class="cmp-table">' +
+    '<colgroup><col style="width:37%"><col style="width:21%"><col style="width:21%"><col style="width:21%"></colgroup>' +
+    '<thead><tr><th class="k">指标</th><th>' + esc(nameA) + '</th><th>' + esc(nameB) + '</th>' +
+    '<th>差（' + esc(nameA.length > 3 ? nameA.slice(-2) : nameA) + '−' + esc(nameB.length > 3 ? nameB.slice(-2) : nameB) + '）</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>';
+
+  box.innerHTML =
+    '<div class="cmp-title"><h3>两人对比</h3>' +
+      '<span class="vs">' + esc(nameA) + ' × ' + esc(nameB) + '</span>' +
+      '<span class="note">同场成绩按赋分总分比较，缺考场次不参与差值</span></div>' +
+    table +
+    '<div class="grid-2">' +
+      '<figure><figcaption>赋分总分走势<span class="note">实线两人，虚线班均 · 单位：分</span></figcaption><div class="chart tall" id="cmpScore"></div></figure>' +
+      '<figure><figcaption>校排名走势<span class="note">纵轴反转，越靠上名次越靠前 · 单位：名</span></figcaption><div class="chart tall" id="cmpSr"></div></figure>' +
+    '</div>' +
+    '<figure><figcaption>六科得分率差<span class="note">' + esc(exShort) + ' · 条形向右＝' + esc(nameA) + ' 领先，向左＝落后（单位：百分点）</span></figcaption><div class="chart" id="cmpSubj"></div></figure>' +
+    '<div class="talk" id="cmpRead"></div>' +
+    '<div class="stu-detail"><div class="tblwrap" id="cmpDetail"></div></div>';
+
+  /* 图一：赋分总分 */
+  const fuA = DB.exams.map((e, i) => DB.byStu[a][i] ? Math.round(DB.byStu[a][i].fu * 10) / 10 : null);
+  const fuB = DB.exams.map((e, i) => DB.byStu[b][i] ? Math.round(DB.byStu[b][i].fu * 10) / 10 : null);
+  const avgAll = DB.exams.map((e, i) => {
+    const r = examRecs(i);
+    return r.length ? Math.round(st(r.map(x => x.fu)).avg * 10) / 10 : null;
+  });
+  const lastA = fuA.reduce((acc, v, i) => v !== null ? i : acc, -1);
+  const lastB = fuB.reduce((acc, v, i) => v !== null ? i : acc, -1);
+  const lineRef = ref >= 0 ? DB.exams[ref].line : null;
+  chart($('#cmpScore'), {
+    animationDuration:600,
+    grid:{ left:46, right:52, top:34, bottom:26 },
+    tooltip: Object.assign(tip(), {formatter: ps => {
+      const i = ps[0].dataIndex;
+      return DB.exams[i].label + '<br>' + esc(nameA) + ' <b>' + fmt(fuA[i]) + '</b>' +
+        '<br>' + esc(nameB) + ' <b>' + fmt(fuB[i]) + '</b>' +
+        (fuA[i] !== null && fuB[i] !== null ? '<br>差 <b>' + signed(fuA[i] - fuB[i]) + '</b>' : '') +
+        '<br>班均 ' + fmt(avgAll[i]);
+    }}),
+    legend:{ show:true, top:0, left:0, itemWidth:12, itemHeight:2, data:[nameA, nameB, '班均'],
+      textStyle:{ fontSize:11, color:C.ink3, fontFamily:FONT } },
+    xAxis: Object.assign({ type:'category', boundaryGap:false, data:shorts,
+      axisLabel:{ color:C.ink3, fontSize:10.5, fontFamily:FONT } }, axisCommon()),
+    yAxis: Object.assign(yCommon(null, ''), { scale:true }),
+    series:[
+      { name:'班均', type:'line', data:avgAll, symbol:'none', z:1,
+        lineStyle:{ width:1, type:'dashed', color:C.ink3 }, itemStyle:{ color:C.ink3 } },
+      { name:nameB, type:'line', data:fuB, connectNulls:false, symbol:'circle', symbolSize:5, z:2,
+        lineStyle:{ width:2, color:C.blue }, itemStyle:{ color:C.blue, borderColor:'#fff', borderWidth:1 },
+        label:{ show:true, position:'bottom', distance:7, color:C.blue, fontSize:10.5, fontFamily:FONT,
+          formatter:p => p.dataIndex === lastB ? fmt(p.value) : '' } },
+      { name:nameA, type:'line', data:fuA, connectNulls:false, symbol:'circle', symbolSize:6, z:3,
+        lineStyle:{ width:2.4, color:C.green }, itemStyle:{ color:C.green, borderColor:'#fff', borderWidth:1 },
+        label:{ show:true, position:'top', distance:7, color:C.green, fontSize:10.5, fontFamily:FONT,
+          formatter:p => p.dataIndex === lastA ? fmt(p.value) : '' },
+        markLine: lineRef === null ? undefined : {
+          silent:true, symbol:'none', z:1,
+          lineStyle:{ color:C.red, type:'dashed', width:1 },
+          label:{ formatter:'特控线 ' + fmt(lineRef), position:'insideStartTop', color:C.red, fontSize:10, fontFamily:FONT },
+          data:[{ yAxis:lineRef }]
+        } }
+    ]
+  });
+
+  /* 图二：校排名 */
+  const srA = DB.exams.map((e, i) => (DB.byStu[a][i] && DB.byStu[a][i].sr !== null) ? DB.byStu[a][i].sr : null);
+  const srB = DB.exams.map((e, i) => (DB.byStu[b][i] && DB.byStu[b][i].sr !== null) ? DB.byStu[b][i].sr : null);
+  chart($('#cmpSr'), {
+    animationDuration:600,
+    grid:{ left:64, right:34, top:34, bottom:42 },
+    tooltip: Object.assign(tip(), {formatter: ps => {
+      const i = ps[0].dataIndex;
+      return DB.exams[i].label + '<br>' + esc(nameA) + ' 校第 <b>' + fmt(srA[i], 0) + '</b>' +
+        '<br>' + esc(nameB) + ' 校第 <b>' + fmt(srB[i], 0) + '</b>' +
+        (srA[i] !== null && srB[i] !== null ? '<br>相差 <b>' + fmt(Math.abs(srA[i] - srB[i]), 0) + '</b> 名' : '');
+    }}),
+    legend:{ show:true, top:0, left:0, itemWidth:12, itemHeight:2, data:[nameA, nameB],
+      textStyle:{ fontSize:11, color:C.ink3, fontFamily:FONT } },
+    xAxis: Object.assign({ type:'category', boundaryGap:false, data:shorts }, axisCommon(), {
+      axisLabel:{ color:C.ink3, fontSize:10.5, fontFamily:FONT, interval:1, margin:14 } }),
+    yAxis: Object.assign(yCommon(null, ''), { inverse:true, scale:true, nameGap:10 }),
+    series:[
+      { name:nameB, type:'line', data:srB, connectNulls:false, symbol:'circle', symbolSize:5,
+        lineStyle:{ width:2, color:C.blue }, itemStyle:{ color:C.blue } },
+      { name:nameA, type:'line', data:srA, connectNulls:false, symbol:'circle', symbolSize:6,
+        lineStyle:{ width:2.4, color:C.green }, itemStyle:{ color:C.green } }
+    ]
+  });
+
+  /* 图三：六科得分率差 */
+  const subDiff = SUBJ.map(s => {
+    const va = ea ? ea.s[s.k] : null, vb = eb ? eb.s[s.k] : null;
+    const d = (va === null || vb === null) ? null : Math.round((va - vb) / s.full * 1000) / 10;
+    return {s, va, vb, d};
+  }).filter(o => o.d !== null).sort((x, y) => y.d - x.d);
+  const dMin = Math.min.apply(null, subDiff.map(o => o.d));
+  const dMax = Math.max.apply(null, subDiff.map(o => o.d));
+  chart($('#cmpSubj'), {
+    animationDuration:600,
+    grid:{ left:68, right:56, top:14, bottom:30 },
+    tooltip: Object.assign(tip(), {trigger:'item', formatter: p => {
+      const o = subDiff[p.dataIndex];
+      return o.s.n + '<br>' + esc(nameA) + ' ' + fmt(o.va) + '（' + pct(o.va / o.s.full * 100) + '）' +
+        '<br>' + esc(nameB) + ' ' + fmt(o.vb) + '（' + pct(o.vb / o.s.full * 100) + '）' +
+        '<br>得分率差 <b>' + signed(o.d) + '</b> 个百分点';
+    }}),
+    xAxis: Object.assign(yCommon(null, ''), { min: Math.floor((dMin - 6) / 10) * 10, max: Math.ceil((dMax + 5) / 10) * 10 }),
+    yAxis: Object.assign({ type:'category', data:subDiff.map(o => o.s.n) }, axisCommon(), { splitLine:{ show:false } }),
+    series:[{
+      type:'bar', barWidth:'56%',
+      data: subDiff.map(o => ({ value:o.d, itemStyle:{ color:o.d >= 0 ? C.green2 : C.red },
+        label:{ position: o.d >= 0 ? 'right' : 'left' } })),
+      label:{ show:true, color:C.ink2, fontSize:11, fontFamily:FONT,
+        formatter: p => signed(p.value) + 'pp' }
+    }]
+  });
+
+  /* 差异解读 */
+  const leadS = subDiff.length ? subDiff[0] : null;
+  const lagS = subDiff.length ? subDiff[subDiff.length - 1] : null;
+  const b1 = [];
+  if (dLast !== null){
+    b1.push(['总分差距', esc(DB.exams[ref].short) + ' 同场：<b>' + esc(nameA) + '</b> ' + fmt(ea.fu) + ' 分，<b>' +
+      esc(nameB) + '</b> ' + fmt(eb.fu) + ' 分，相差 <b>' + fmt(Math.abs(dLast)) + ' 分</b>（' +
+      (dLast >= 0 ? nameA + ' 领先' : nameB + ' 领先') + '）；九次同场平均差 <b>' + signed(dAvg) + '</b> 分。']);
+  }
+  if (diffs.length > 1){
+    const wider = Math.abs(dLast) >= Math.abs(dFirst);
+    const move = t => Math.abs(t) < 3 ? '基本没动' : (t > 0 ? '前进 ' + fmt(t, 0) + ' 名' : '后退 ' + fmt(-t, 0) + ' 名');
+    b1.push(['差距走势', '两人的差距从 ' + signed(dFirst) + ' 分走到 ' + signed(dLast) + ' 分，' +
+      (wider ? '在扩大' : '在收窄') + '（变化 ' + fmt(Math.abs(Math.abs(dLast) - Math.abs(dFirst))) + ' 分）；' +
+      '近 5 次校排名，' + nameA + ' ' + move(A.tSpan) + '、' + nameB + ' ' + move(B.tSpan) + '。']);
+  }
+  b1.push(['稳定性', '总分标准差 ' + nameA + ' <b>' + fmt(sA.sd) + '</b>、' + nameB + ' <b>' + fmt(sB.sd) +
+    '</b>；校排名标准差 ' + fmt(A.ss.srSd, 0) + ' 对 ' + fmt(B.ss.srSd, 0) + '，' +
+    (A.ss.srSd <= B.ss.srSd ? nameA : nameB) + ' 的成绩更可预测——' +
+    (A.ss.srSd <= B.ss.srSd ? nameB : nameA) + ' 的起伏更大，谈话时要先问清“哪几次是失常、为什么”。']);
+  if (leadS && lagS){
+    const aw = A.worst, bw = B.worst;
+    const leadTxt = leadS.d >= 0
+      ? nameA + ' 领先最多的是 <b>' + leadS.s.n + '</b>（+' + fmt(leadS.d) + ' 个百分点，折算约 <b>' +
+        fmt(leadS.d / 100 * leadS.s.full, 0) + ' 分</b>）'
+      : '六科里 ' + nameA + ' 没有一科占优，差距最小的是 <b>' + leadS.s.n + '</b>（' + signed(leadS.d) + ' 个百分点）';
+    const lagTxt = (leadS === lagS) ? '' : (lagS.d < 0
+      ? '；' + nameA + ' 落后最多的是 <b>' + lagS.s.n + '</b>（' + signed(lagS.d) + ' 个百分点，折算约 <b>' +
+        fmt(Math.abs(lagS.d) / 100 * lagS.s.full, 0) + ' 分</b>）'
+      : '；' + nameB + ' 在六科里都不占优，差距最小的是 <b>' + lagS.s.n + '</b>（' + signed(lagS.d) + ' 个百分点）');
+    b1.push(['结构差异', leadTxt + lagTxt + '。各自最弱科：' + nameA + ' <b>' + (aw ? aw.s.n : '—') + '</b>（' +
+      (aw ? (aw.d >= 0 ? '六科均在班均以上' : signed(aw.d) + 'pp') : '—') + '）、' + nameB + ' <b>' +
+      (bw ? bw.s.n : '—') + '</b>（' + (bw ? (bw.d >= 0 ? '六科均在班均以上' : signed(bw.d) + 'pp') : '—') + '）。']);
+  }
+  if (ref >= 0){
+    b1.push(['名次位置', '同场班排 ' + ea.cr + ' 对 ' + eb.cr + '，差 <b>' + fmt(Math.abs(ea.cr - eb.cr), 0) + '</b> 位；' +
+      '校排 ' + fmt(ea.sr, 0) + ' 对 ' + fmt(eb.sr, 0) + '，差 <b>' + fmt(Math.abs(ea.sr - eb.sr), 0) + '</b> 名。' +
+      '九次最好校排名：' + nameA + ' ' + fmt(A.ss.srBest, 0) + '、' + nameB + ' ' + fmt(B.ss.srBest, 0) + '。']);
+  }
+  b1.push(['达线情况', '已录划线 ' + lineN + ' 场里，' + nameA + ' 达线 <b>' + passA + '</b> 次、' + nameB + ' 达线 <b>' +
+    passB + '</b> 次；最近一次 ' + (A.dline === null ? nameA + ' 未录线' :
+      nameA + (A.dline >= 0 ? ' 线上 ' + fmt(A.dline) + ' 分' : ' 距线 ' + fmt(Math.abs(A.dline)) + ' 分')) + '，' +
+    (B.dline === null ? nameB + ' 未录线' :
+      nameB + (B.dline >= 0 ? ' 线上 ' + fmt(B.dline) + ' 分' : ' 距线 ' + fmt(Math.abs(B.dline)) + ' 分')) + '。']);
+  if (leadS && lagS && leadS !== lagS && leadS.d > 0 && lagS.d < 0){
+    b1.push(['互相取法', nameA + ' 强在 <b>' + leadS.s.n + '</b>（+' + fmt(leadS.d) + ' 个百分点），把这科的做法讲给 ' + nameB +
+      '：错题怎么归类、限时训练掐多少分钟、每次考后先改哪一类题；' + nameB + ' 强在 <b>' + lagS.s.n + '</b>（+' +
+      fmt(Math.abs(lagS.d)) + ' 个百分点），带 ' + nameA + ' 过一遍这科的必得分清单。两人订同一个周目标，比互相比名次更能提分。']);
+  } else {
+    b1.push(['互相取法', '两人的强弱分布接近，适合共用一套打法：同一天做同一科的限时训练，互相批改，只挑“会做却做错”的题对照；每周各交两次结果，比的是完成度而不是名次。']);
+  }
+  const focusTxt = w => w ? (w.d >= 0 ? '守住 <b>' + w.s.n + '</b>（这科已在班均以上，别松手）' : '主攻 <b>' + w.s.n + '</b>') : '主攻弱科';
+  b1.push(['谈话落点', '先各自认领一科：' + nameA + ' ' + focusTxt(A.worst) + '，' + nameB + ' ' + focusTxt(B.worst) +
+    '；两周后只用这两科的限时成绩验收，避免两人同时在六科上分散用力。']);
+
+  $('#cmpRead').innerHTML =
+    '<h3>差异解读<span class="sub">' + esc(nameA) + ' × ' + esc(nameB) + ' · 班主任可据此分别谈话</span></h3>' +
+    '<ul>' + b1.map(x => '<li><span class="tagm">' + x[0] + '</span><span class="tx">' + x[1] + '</span></li>').join('') + '</ul>';
+
+  /* 九次对照表 */
+  const head = '<colgroup><col style="width:120px"><col style="width:66px"><col style="width:66px"><col style="width:58px">' +
+    '<col style="width:52px"><col style="width:52px"><col style="width:56px"><col style="width:56px"></colgroup>' +
+    '<thead><tr><th class="l">考试</th><th>' + esc(nameA) + ' 赋分</th><th>' + esc(nameB) + ' 赋分</th><th>差</th>' +
+    '<th>' + esc(nameA) + ' 班排</th><th>' + esc(nameB) + ' 班排</th><th>' + esc(nameA) + ' 校排</th><th>' + esc(nameB) + ' 校排</th></tr></thead>';
+  const body = DB.exams.map((e, i) => {
+    const x = DB.byStu[a][i], y = DB.byStu[b][i];
+    const d = (x && y) ? x.fu - y.fu : null;
+    const dc = d === null ? '' : (d > 0 ? ' style="color:#20584A"' : d < 0 ? ' style="color:#A5382A"' : '');
+    return '<tr><td class="l">' + esc(e.short) + '</td>' +
+      '<td>' + (x ? '<b>' + fmt(x.fu) + '</b>' : '<span style="color:#A9B8AE">缺考</span>') + '</td>' +
+      '<td>' + (y ? '<b>' + fmt(y.fu) + '</b>' : '<span style="color:#A9B8AE">缺考</span>') + '</td>' +
+      '<td' + dc + '>' + (d === null ? '—' : signed(d)) + '</td>' +
+      '<td>' + (x ? x.cr : '—') + '</td><td>' + (y ? y.cr : '—') + '</td>' +
+      '<td>' + (x ? fmt(x.sr, 0) : '—') + '</td><td>' + (y ? fmt(y.sr, 0) : '—') + '</td></tr>';
+  }).join('');
+  $('#cmpDetail').innerHTML = '<table class="detail">' + head + '<tbody>' + body + '</tbody></table>';
+}
+
+/* ---------- 视图切换 ---------- */
+function switchView(v){
+  S.view = v;
+  $('#viewClass').hidden = v !== 'class';
+  $('#viewStudent').hidden = v !== 'student';
+  $('#viewEdge').hidden = v !== 'edge';
+  document.querySelectorAll('.tabs button[data-view]').forEach(b =>
+    b.setAttribute('aria-selected', String(b.dataset.view === v)));
+  disposeCharts();
+  renderTimeline();
+  if (v === 'class') renderClass();
+  else if (v === 'edge') renderEdge();
+  else renderStudent();
+}
+
+function renderClass(){
+  renderLine();
+  renderKPI();
+  renderClassCharts();
+  renderRoster();
+  renderBrief();
+}
+
+function renderStudent(){
+  disposeCharts();
+  if (S.student === null){
+    $('#stuProfile').hidden = true;
+    $('#stuEmpty').hidden = false;
+    $('#cmpBar').hidden = true;
+    $('#stuCompare').hidden = true;
+    return;
+  }
+  $('#stuEmpty').hidden = true;
+  $('#stuProfile').hidden = false;
+  const P = buildProfile(S.student);
+  renderCard(P);
+  renderPersonalCharts(P);
+  renderTalk(P);
+  renderDetail(S.student);
+  if (S.cmp === S.student) S.cmp = null;
+  syncCmpBar();
+  renderCompare();
+}
+
+/* ---------- 全部划线 ---------- */
+function renderAllLines(){
+  const box = $('#allLines');
+  box.innerHTML = '<div class="tblwrap" style="margin-top:10px"><table class="detail">' +
+    '<colgroup><col style="width:150px"><col style="width:120px"><col style="width:230px"><col></colgroup>' +
+    '<thead><tr><th class="l">考试</th><th>特控线（赋分总分）</th><th class="l">六科线 语/数/英/物/化/生</th><th class="l">达线人数 / 参测</th></tr></thead><tbody>' +
+    DB.exams.map((e, i) => {
+      const p = passList(i);
+      return '<tr><td class="l">' + esc(e.label) + '</td>' +
+        '<td><input type="number" step="0.5" class="line-cell" data-i="' + i + '" value="' + (e.line === null ? '' : e.line) + '" style="width:90px;padding:4px 6px;border:1px solid #D3D7CC;text-align:right"></td>' +
+        '<td class="l" style="font-size:12px;color:#5C665F">' + SUBJ.map(x => {
+          const v = sLine(i, x.k);
+          return v === null ? '<span style="color:#B4BAB2">—</span>' : fmt(v);
+        }).join(' / ') + '</td>' +
+        '<td class="l">' + (p ? p.length + ' / ' + examRecs(i).length : '<span style="color:#8A6B22">待录入</span>') + '</td></tr>';
+    }).join('') + '</tbody></table></div>' +
+    '<p style="font-size:11.5px;color:#79837C;margin-top:8px">前七场已按你给的当次划线预填，逐场可改；E8、E9 待录入（空白即不判定达线）。总分线在此改，六科线在班级总览的「各科特控线」里改。改动即保存到本机，优先于预置值。</p>';
+  box.querySelectorAll('.line-cell').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const i = Number(inp.dataset.i);
+      DB.exams[i].line = inp.value === '' ? null : Number(inp.value);
+      saveLines();
+      renderAllLines();
+      if (S.view === 'class'){ renderLine(); renderKPI(); renderRoster(); renderClassCharts(); renderBrief(); }
+      renderTimeline();
+    });
+  });
+}
+
+function saveLines(){
+  const obj = {}, subObj = {};
+  DB.exams.forEach(e => {
+    obj[e.id] = (e.line === null ? null : e.line);
+    if (e.lineS){
+      const one = {};
+      SUBJ.forEach(x => { if (Number.isFinite(e.lineS[x.k])) one[x.k] = e.lineS[x.k]; });
+      if (Object.keys(one).length) subObj[e.id] = one;
+    }
+  });
+  const a = lsSet(LINE_KEY, JSON.stringify(obj));
+  const b = lsSet(SUBLINE_KEY, JSON.stringify(subObj));
+  if (!a || !b) toast('划线无法保存到本机（浏览器限制），关闭页面后会丢失');
+}
+
+/* ---------- 数据导入 ---------- */
+function normH(v){ return String(v == null ? '' : v).replace(/\s+/g, ''); }
+
+function mapHeader(h){
+  h = normH(h);
+  if (!h) return null;
+  if (h.startsWith('班序')) return 'cr';
+  if (h.startsWith('姓名')) return 'name';
+  if (/^赋分(总分|总数)/.test(h)) return 'fu';
+  if (/^原始总分/.test(h)) return 'raw';
+  if (h.startsWith('校排名')) return 'sr';
+  if (h.startsWith('进退')) return 'chg';
+  if (h.startsWith('化学赋分')) return 'fc';
+  if (h.startsWith('生物赋分')) return 'fb';
+  if (h.startsWith('化学')) return 'c';
+  if (h.startsWith('生物')) return 'b';
+  if (h.startsWith('语文')) return 'y';
+  if (h.startsWith('数学')) return 'm';
+  if (h.startsWith('英语')) return 'e';
+  if (h.startsWith('物理')) return 'p';
+  if (/排名$/.test(h)) return 'prev';
+  return null;
+}
+
+function importAOA(aoa, fileName){
+  // 找表头行
+  let hIdx = -1, cols = {};
+  for (let i = 0; i < Math.min(aoa.length, 8); i++){
+    const row = aoa[i] || [];
+    const mapped = row.map(mapHeader);
+    if (mapped.includes('name')){ hIdx = i; mapped.forEach((f, k) => { if (f) cols[f] = k; }); break; }
+  }
+  if (hIdx < 0) throw new Error('没找到含“姓名”的表头行，请确认是成绩单原始表格');
+  if (cols.fu === undefined) throw new Error('没找到“赋分总分”列。若这份成绩单只有原始分，请先由学校赋分后再导入');
+
+  const title = String(aoa[0] && aoa[0][0] ? aoa[0][0] : '').trim();
+  let label = (title || fileName).replace(/^2403班/, '').replace(/成绩分析|考试成绩|成绩$/, '').trim();
+  if (!label) label = fileName.replace(/\.(xlsx|xls|csv)$/i, '');
+  const short = label.length > 10 ? label.slice(0, 10) : label;
+
+  const id = 'X' + Date.now();
+  const exam = {id, label, short, title, line:null, idx:DB.exams.length};
+  const recs = [];
+  const gainC = gainCurve('c'), gainB = gainCurve('b');
+
+  for (let i = hIdx + 1; i < aoa.length; i++){
+    const row = aoa[i] || [];
+    const nm = normH(row[cols.name]);
+    const cr = Number(row[cols.cr]);
+    if (!nm || !Number.isFinite(cr)) continue;
+    const fu = Number(row[cols.fu]);
+    if (!Number.isFinite(fu)) continue;
+    let si = DB.names.indexOf(nm);
+    if (si < 0){ DB.names.push(nm); si = DB.names.length - 1; }
+    const get = k => {
+      const v = cols[k] === undefined ? null : Number(row[cols[k]]);
+      return Number.isFinite(v) ? v : null;
+    };
+    const s = {y:get('y'), m:get('m'), e:get('e'), p:get('p'), c:get('c'), b:get('b')};
+    let fc = get('fc'), fb = get('fb'), est = false;
+    if (fc === null || fb === null){
+      const sum6 = SUBJ.reduce((a, q) => a + (s[q.k] || 0), 0);
+      const raw = get('raw');
+      const G = fu - (raw !== null ? raw : sum6);
+      const wc = Math.max(0.5, gainC(s.c || 0)), wb = Math.max(0.5, gainB(s.b || 0));
+      const gc = G * wc / (wc + wb);
+      fc = Math.round((s.c || 0) + gc);
+      fb = Math.round((s.b || 0) + G - gc);
+      est = true;
+    }
+    recs.push({e:exam.idx, si, cr, fu, raw:get('raw'), sr:get('sr'), s, fc, fb, est});
+  }
+  if (!recs.length) throw new Error('表头识别成功，但没有读到有效数据行');
+
+  DB.exams.push(exam);
+  recs.forEach(r => DB.recs.push(r));
+  indexDB(DB);
+
+  // 序列化本次导入，便于下次打开时恢复
+  const packLines = ['names:' + DB.names.join(',')];
+  packLines.push('exam:' + [id, label, short, title, ''].join('|'));
+  packLines.push('rows:');
+  recs.forEach(r => packLines.push([
+    r.e, r.si, r.cr, r.fu, r.raw === null ? '' : r.raw, r.sr === null ? '' : r.sr,
+    r.s.y === null ? '' : r.s.y, r.s.m === null ? '' : r.s.m, r.s.e === null ? '' : r.s.e,
+    r.s.p === null ? '' : r.s.p, r.s.c === null ? '' : r.s.c, r.s.b === null ? '' : r.s.b,
+    r.fc, r.fb, r.est ? 1 : 0
+  ].join('|')));
+
+  const arr = readImports();
+  arr.push(packLines.join('\n'));
+  if (!lsSet(IMPORT_KEY, JSON.stringify(arr))) toast('导入只在本次打开有效：本机禁止存储');
+  return {exam, n:recs.length};
+}
+
+function readImports(){
+  const raw = lsGet(IMPORT_KEY);
+  if (!raw) return [];
+  try{ const arr = JSON.parse(raw); return Array.isArray(arr) ? arr : []; }catch(e){ return []; }
+}
+
+function rebuild(){
+  const packs = readImports();
+  let db = parsePack(PACK);
+  packs.forEach(p => parsePack(p, db));
+  DB = db;
+  indexDB(DB);
+  applyLines();
+}
+
+function applyLines(){
+  let obj = {}, objS = {};
+  const raw = lsGet(LINE_KEY);
+  if (raw){ try{ obj = JSON.parse(raw) || {}; }catch(e){ obj = {}; } }
+  const rawS = lsGet(SUBLINE_KEY);
+  if (rawS){ try{ objS = JSON.parse(rawS) || {}; }catch(e){ objS = {}; } }
+
+  DB.exams.forEach(e => {
+    // 本机已录入的优先，其次用预置划线
+    if (obj[e.id] !== undefined) e.line = numOrNull(obj[e.id]);
+    else if (LINE_DEFAULT[e.id] !== undefined) e.line = LINE_DEFAULT[e.id];
+
+    const one = objS[e.id];
+    if (one && typeof one === 'object'){
+      e.lineS = {};
+      SUBJ.forEach(x => { e.lineS[x.k] = Number.isFinite(one[x.k]) ? one[x.k] : null; });
+    } else if (SUBLINE_DEFAULT[e.id]){
+      e.lineS = {};
+      SUBJ.forEach(x => { e.lineS[x.k] = SUBLINE_DEFAULT[e.id][x.k]; });
+    }
+  });
+}
+
+function handleFile(file){
+  if (!file) return;
+  if (!window.XLSX){ toast('解析库未加载，需要联网打开本页后再导入'); return; }
+  const fr = new FileReader();
+  fr.onload = () => {
+    try{
+      const wb = XLSX.read(new Uint8Array(fr.result), {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const aoa = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:null});
+      const res = importAOA(aoa, file.name);
+      S.exam = DB.exams.length - 1;
+      S.view = 'class';
+      $('#viewClass').hidden = false;
+      $('#viewStudent').hidden = true;
+      document.querySelectorAll('.tabs button[data-view]').forEach(b =>
+        b.setAttribute('aria-selected', String(b.dataset.view === 'class')));
+      disposeCharts();
+      renderTimeline(); renderClass();
+      const log = $('#importLog');
+      log.insertAdjacentHTML('afterbegin', '<li>· 已并入「' + esc(res.exam.label) + '」，' + res.n + ' 人；特控线待录入</li>');
+      toast('已导入：' + res.exam.label + '（' + res.n + ' 人）');
+    }catch(e){
+      toast('导入失败：' + (e && e.message ? e.message : '文件无法解析'));
+    }
+  };
+  fr.readAsArrayBuffer(file);
+}
+
+/* ---------- 导出 ---------- */
+function exportJSON(){
+  const data = {
+    class:'荔浦中学 2403班（物化生）',
+    exportedAt:new Date().toISOString().slice(0, 10),
+    exams:DB.exams.map(e => ({id:e.id, label:e.label, short:e.short, title:e.title, line:e.line})),
+    students:DB.names,
+    records:DB.recs.map(r => ({
+      exam:DB.exams[r.e].id, name:DB.names[r.si], classRank:r.cr,
+      score:r.fu, rawTotal:r.raw, schoolRank:r.sr,
+      subj:r.s, subjFu:{c:r.fc, b:r.fb}, estimated:!!r.est
+    }))
+  };
+  const blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '2403班成绩数据.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+  toast('已导出 JSON，可直接发给助手并入页面');
+}
+
+/* ---------- 初始化 ---------- */
+function init(){
+  DB = parsePack(PACK);
+  readImports().forEach(p => parsePack(p, DB));
+  indexDB(DB);
+  applyLines();
+
+  const dl = $('#stuList');
+  dl.innerHTML = DB.names.map(n => '<option value="' + esc(n) + '">').join('');
+
+  // 快捷 chips：本次前 5 名 + 进步最快 3 人
+  const recs = examRecs(S.exam).slice(0, 5).map(r => r.si);
+  const chips = recs.slice();
+  $('#stuChips').innerHTML = chips.map(si =>
+    '<button class="chip" data-si="' + si + '">' + esc(DB.names[si]) + '</button>').join('');
+  $('#stuChips').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    pickStudent(Number(c.dataset.si));
+  }));
+
+  // tabs
+  document.querySelectorAll('.tabs button[data-view]').forEach(b =>
+    b.addEventListener('click', () => switchView(b.dataset.view)));
+
+  // 划线
+  $('#lineInput').addEventListener('change', () => {
+    const v = $('#lineInput').value;
+    DB.exams[S.exam].line = v === '' ? null : Number(v);
+    saveLines();
+    renderLine(); renderKPI(); renderClassCharts(); renderRoster(); renderBrief();
+    renderTimeline();
+    if (S.view === 'edge') renderEdge();
+    if ($('#allLines').hidden === false) renderAllLines();
+  });
+  $('#subjLineRow').addEventListener('change', ev => {
+    const el = ev.target;
+    if (!el || !el.dataset || !el.dataset.k) return;
+    const k = el.dataset.k;
+    lineSOf(S.exam)[k] = numOrNull(el.value);
+    saveLines();
+    renderLine(); renderRoster(); renderBrief(); renderTimeline();
+    if (S.view === 'edge') renderEdge();
+  });
+  $('#btnAllLines').addEventListener('click', () => {
+    const box = $('#allLines');
+    box.hidden = !box.hidden;
+    $('#btnAllLines').classList.toggle('on', !box.hidden);
+    if (!box.hidden) renderAllLines();
+  });
+
+  // 单科切换
+  $('#btnSubj').addEventListener('click', () => {
+    S.showSubj = !S.showSubj;
+    const b = $('#btnSubj');
+    b.classList.toggle('on', S.showSubj);
+    b.setAttribute('aria-pressed', String(S.showSubj));
+    b.textContent = S.showSubj ? '显示单科' : '隐藏单科';
+    renderRoster();
+  });
+
+  // 学生搜索
+  const inp = $('#stuInput');
+  inp.addEventListener('input', () => {
+    const v = inp.value.trim();
+    if (!v) return;
+    let idx = DB.names.findIndex(n => n === v);
+    if (idx < 0) idx = DB.names.findIndex(n => n.includes(v));
+    if (idx < 0) return;
+    pickStudent(idx, false);
+  });
+  inp.addEventListener('change', () => {
+    const v = inp.value.trim();
+    const idx = DB.names.findIndex(n => n === v);
+    if (idx < 0){ toast('没有找到这个学生，请从下拉列表里选'); inp.value = S.student === null ? '' : DB.names[S.student]; }
+  });
+
+  // 对比学生
+  const cinp = $('#cmpInput');
+  cinp.addEventListener('input', () => {
+    const v = cinp.value.trim();
+    if (!v) return;
+    let idx = DB.names.findIndex(n => n === v);
+    if (idx < 0) idx = DB.names.findIndex(n => n.includes(v));
+    if (idx < 0) return;
+    if (idx === S.student){ toast('这就是当前查看的学生，请选另一位'); return; }
+    if (S.cmp === idx) return;
+    S.cmp = idx;
+    disposeCharts();
+    renderStudent();
+    $('#cmpHint').textContent = '正在对比 ' + DB.names[S.student] + ' 与 ' + DB.names[idx] + '；改上面的姓名即换人，点“取消对比”回到单人档案';
+    $('#cmpClear').hidden = false;
+  });
+  cinp.addEventListener('change', () => {
+    const v = cinp.value.trim();
+    const idx = DB.names.findIndex(n => n === v);
+    if (idx < 0){
+      toast('没有找到这个学生，请从下拉列表里选');
+      cinp.value = S.cmp === null ? '' : DB.names[S.cmp];
+    }
+  });
+  $('#cmpClear').addEventListener('click', () => {
+    S.cmp = null;
+    disposeCharts();
+    renderStudent();
+    syncCmpBar();
+    toast('已取消对比');
+  });
+
+  // 导入
+  const dz = $('#dropZone'), fi = $('#fileInput');
+  dz.addEventListener('click', () => fi.click());
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('hot'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('hot'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); dz.classList.remove('hot');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  fi.addEventListener('change', () => { if (fi.files[0]) handleFile(fi.files[0]); fi.value = ''; });
+
+  $('#btnExport').addEventListener('click', exportJSON);
+  const undo = $('#btnResetLocal');
+  if (readImports().length) undo.hidden = false;
+  undo.addEventListener('click', () => {
+    const arr = readImports();
+    arr.pop();
+    if (arr.length) lsSet(IMPORT_KEY, JSON.stringify(arr)); else lsDel(IMPORT_KEY);
+    undo.hidden = arr.length === 0;
+    rebuild();
+    setExam(Math.min(S.exam, DB.exams.length - 1));
+    toast('已撤销最近一次导入');
+  });
+
+  $('#footStat').textContent = DB.exams.length + ' 次考试 · ' + DB.names.length + ' 名学生 · ' + DB.recs.length + ' 条成绩记录';
+
+  window.addEventListener('resize', () => {
+    chartInsts.forEach(c => { try{ c.resize(); }catch(e){} });
+  });
+
+  const esel = $('#edgeExam');
+  esel.innerHTML = DB.exams.map((e, i) => '<option value="' + i + '">' + esc(e.label) + '</option>').join('');
+  esel.value = String(S.exam);
+  esel.addEventListener('change', () => {
+    S.exam = Number(esel.value);
+    disposeCharts();
+    renderTimeline();
+    renderEdge();
+  });
+
+  renderTimeline();
+  renderClass();
+}
+
+function pickStudent(si, fillInput){
+  S.student = si;
+  if (S.cmp === si) S.cmp = null;
+  if (fillInput === undefined || fillInput) $('#stuInput').value = DB.names[si];
+  if (S.view !== 'student') switchView('student');
+  else { disposeCharts(); renderTimeline(); renderStudent(); }
+  $('#stuChips').querySelectorAll('.chip').forEach(c =>
+    c.setAttribute('aria-pressed', String(Number(c.dataset.si) === si)));
+}
+
+function setExam(i){
+  S.exam = i;
+  disposeCharts();
+  renderTimeline();
+  if (S.view === 'class') renderClass();
+  else if (S.view === 'edge') renderEdge();
+  else renderStudent();
+}
+
+init();
+})();
+</script>
+
+</body>
+</html>
